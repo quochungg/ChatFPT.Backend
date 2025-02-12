@@ -1,10 +1,19 @@
-﻿namespace ChatFPT.Domain.Base
+﻿using ChatFPT.Core;
+
+namespace ChatFPT.Domain.Base
 {
-    public class AuditableEntity
+    public abstract class AuditableEntity
     {
-        public DateTime CreatedDate { get; set; }
+        protected AuditableEntity()
+        {
+            Id = Guid.NewGuid().ToString("N");
+            CreatedTime = LastUpdateTime = CoreHelper.SystemTimeNow;
+        }
+        public string Id { get; set; }
+        public DateTimeOffset? CreatedTime { get; set; }
         public string? CreatedBy { get; set; }
-        public DateTime? ModifiedDate { get; set; }
-        public string? ModifiedBy { get; set; }
+        public DateTimeOffset? LastUpdateTime { get; set; }
+        public string? LastUpdateBy { get; set; }
     }
+        
 }

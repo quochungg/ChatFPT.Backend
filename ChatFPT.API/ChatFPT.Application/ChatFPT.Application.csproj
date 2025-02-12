@@ -16,4 +16,12 @@
     <Folder Include="Common\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ChatFPT.Insfracstructure\ChatFPT.Insfracstructure.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,0 +1,24 @@
+﻿
+
+using ChatFPT.Core;
+using Microsoft.AspNetCore.Identity;
+
+namespace ChatFPT.Domain.Entities
+{
+    public class ApplicationUser : IdentityUser<Guid>
+    {
+        public string? FullName { get; set; }
+        public string? Password { get; set; }
+        public DateTimeOffset? CreatedTime { get; set; }
+
+        public DateTimeOffset? LastUpdatedTime { get; set; }
+
+        public DateTimeOffset? DeletedTime { get; set; }
+
+        public ApplicationUser()
+        {
+            CreatedTime = CoreHelper.SystemTimeNow;
+            LastUpdatedTime = CreatedTime;
+        }
+    }
+}
