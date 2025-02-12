@@ -140,3 +140,4 @@ _NCrunch*
 /ChatFPT.API/.vs/ChatFPT.API/v17
 /ChatFPT.API/.vs/ProjectEvaluation
 /ChatFPT.API/.vs/ChatFPT.API/FileContentIndex
+*.v2
