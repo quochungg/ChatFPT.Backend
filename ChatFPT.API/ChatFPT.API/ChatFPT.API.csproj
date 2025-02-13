@@ -7,17 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="9.0.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ChatFPT.Application\ChatFPT.Application.csproj" />
     <ProjectReference Include="..\ChatFPT.Insfracstructure\ChatFPT.Insfracstructure.csproj" />
+    <ProjectReference Include="..\ChatFPT.Service\ChatFPT.Service.csproj" />
   </ItemGroup>
 
   <ItemGroup>

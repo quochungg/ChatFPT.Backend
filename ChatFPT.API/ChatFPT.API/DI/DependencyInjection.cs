@@ -14,6 +14,7 @@ namespace ChatFPT.API.DI
             services.ConfigCors();
             services.ConfigRoute();
             services.AddDatabase(configuration);
+            services.AddEndpointsApiExplorer();
 
         }
         public static void ConfigCors(this IServiceCollection services)
@@ -73,8 +74,8 @@ namespace ChatFPT.API.DI
 
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                c.IncludeXmlComments(xmlPath);
-                // Thêm JWT Bearer Token vào Swagger
+                //c.IncludeXmlComments(xmlPath);
+                //// Thêm JWT Bearer Token vào Swagger
                 c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
                 {
                     In = Microsoft.OpenApi.Models.ParameterLocation.Header,
