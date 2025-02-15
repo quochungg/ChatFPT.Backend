@@ -1,8 +1,6 @@
 ﻿using ChatFPT.Application.Common;
-using ChatFPT.Service;
 using ChatFPT.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 [Route("api/gpt")]
 [ApiController]
