@@ -207,8 +207,7 @@ namespace ChatFPT.Insfracstructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Rate = table.Column<int>(type: "int", nullable: true),
                     Note = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
@@ -220,8 +219,8 @@ namespace ChatFPT.Insfracstructure.Migrations
                 {
                     table.PrimaryKey("PK_Feedbacks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Feedbacks_AspNetUsers_UserId1",
-                        column: x => x.UserId1,
+                        name: "FK_Feedbacks_AspNetUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                 });
@@ -231,10 +230,9 @@ namespace ChatFPT.Insfracstructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     FullName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     MSSV = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastUpdateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
@@ -244,8 +242,8 @@ namespace ChatFPT.Insfracstructure.Migrations
                 {
                     table.PrimaryKey("PK_StudentInfos", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_StudentInfos_AspNetUsers_UserId1",
-                        column: x => x.UserId1,
+                        name: "FK_StudentInfos_AspNetUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                 });
@@ -255,10 +253,9 @@ namespace ChatFPT.Insfracstructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    CategoryId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CategoryId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     IsResolve = table.Column<bool>(type: "bit", nullable: false),
                     CreatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -269,8 +266,8 @@ namespace ChatFPT.Insfracstructure.Migrations
                 {
                     table.PrimaryKey("PK_Questions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Questions_AspNetUsers_UserId1",
-                        column: x => x.UserId1,
+                        name: "FK_Questions_AspNetUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
@@ -368,9 +365,9 @@ namespace ChatFPT.Insfracstructure.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Feedbacks_UserId1",
+                name: "IX_Feedbacks_UserId",
                 table: "Feedbacks",
-                column: "UserId1");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Questions_CategoryId",
@@ -378,9 +375,9 @@ namespace ChatFPT.Insfracstructure.Migrations
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Questions_UserId1",
+                name: "IX_Questions_UserId",
                 table: "Questions",
-                column: "UserId1");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_QuestionTags_QuestionId",
@@ -393,9 +390,9 @@ namespace ChatFPT.Insfracstructure.Migrations
                 column: "TagId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_StudentInfos_UserId1",
+                name: "IX_StudentInfos_UserId",
                 table: "StudentInfos",
-                column: "UserId1");
+                column: "UserId");
         }
 
         /// <inheritdoc />

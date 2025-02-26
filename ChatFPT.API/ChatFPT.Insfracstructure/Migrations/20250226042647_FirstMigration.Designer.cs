@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChatFPT.Insfracstructure.Migrations
 {
     [DbContext(typeof(ChatBoxDBContext))]
-    [Migration("20250212144728_FirstMigration")]
+    [Migration("20250226042647_FirstMigration")]
     partial class FirstMigration
     {
         /// <inheritdoc />
@@ -227,15 +227,12 @@ namespace ChatFPT.Insfracstructure.Migrations
                     b.Property<int?>("Rate")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("UserId1")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Feedbacks");
                 });
@@ -266,17 +263,14 @@ namespace ChatFPT.Insfracstructure.Migrations
                     b.Property<DateTimeOffset?>("LastUpdateTime")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("UserId1")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Questions");
                 });
@@ -319,15 +313,12 @@ namespace ChatFPT.Insfracstructure.Migrations
                     b.Property<string>("MSSV")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("UserId1")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserId");
 
                     b.ToTable("StudentInfos");
                 });
@@ -498,7 +489,7 @@ namespace ChatFPT.Insfracstructure.Migrations
                 {
                     b.HasOne("ChatFPT.Domain.Entities.ApplicationUser", "User")
                         .WithMany()
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
@@ -511,7 +502,7 @@ namespace ChatFPT.Insfracstructure.Migrations
 
                     b.HasOne("ChatFPT.Domain.Entities.ApplicationUser", "User")
                         .WithMany()
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Category");
 
@@ -537,7 +528,7 @@ namespace ChatFPT.Insfracstructure.Migrations
                 {
                     b.HasOne("ChatFPT.Domain.Entities.ApplicationUser", "User")
                         .WithMany()
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
