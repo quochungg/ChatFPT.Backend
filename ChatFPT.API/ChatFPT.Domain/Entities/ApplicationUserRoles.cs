@@ -1,7 +1,4 @@
-﻿
-
-using ChatFPT.Core;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace ChatFPT.Domain.Entities
 {
@@ -14,7 +11,7 @@ namespace ChatFPT.Domain.Entities
         public DateTimeOffset? DeletedTime { get; set; }
         public ApplicationUserRoles()
         {
-            CreatedTime = CoreHelper.SystemTimeNow;
+            CreatedTime = DateTimeOffset.UtcNow;
             LastUpdatedTime = CreatedTime;
         }
     }

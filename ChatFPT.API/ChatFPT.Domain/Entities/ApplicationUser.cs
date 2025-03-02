@@ -1,6 +1,4 @@
 ﻿
-
-using ChatFPT.Core;
 using Microsoft.AspNetCore.Identity;
 
 namespace ChatFPT.Domain.Entities
@@ -9,6 +7,10 @@ namespace ChatFPT.Domain.Entities
     {
         public string? FullName { get; set; }
         public string? Password { get; set; }
+
+        public bool isGoogle { get; set; }
+
+        public string? GoogleId { get; set; }
         public DateTimeOffset? CreatedTime { get; set; }
 
         public DateTimeOffset? LastUpdatedTime { get; set; }
@@ -17,7 +19,7 @@ namespace ChatFPT.Domain.Entities
 
         public ApplicationUser()
         {
-            CreatedTime = CoreHelper.SystemTimeNow;
+            CreatedTime = DateTimeOffset.UtcNow;
             LastUpdatedTime = CreatedTime;
         }
     }

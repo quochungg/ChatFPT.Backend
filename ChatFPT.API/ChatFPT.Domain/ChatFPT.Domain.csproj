@@ -11,8 +11,4 @@
     <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="9.0.2" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\ChatFPT.Core\ChatFPT.Core.csproj" />
-  </ItemGroup>
-
 </Project>

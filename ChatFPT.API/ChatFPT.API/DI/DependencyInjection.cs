@@ -1,4 +1,6 @@
-﻿using ChatFPT.Insfracstructure.Base;
+﻿using ChatFPT.Application.Interface;
+using ChatFPT.Application.Repositories.ChatFPT.Infrastructure.Repositories;
+using ChatFPT.Insfracstructure.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
@@ -15,7 +17,8 @@ namespace ChatFPT.API.DI
             services.ConfigRoute();
             services.AddDatabase(configuration);
             services.AddEndpointsApiExplorer();
-
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddUnitOfWork();
         }
         public static void ConfigCors(this IServiceCollection services)
         {
@@ -29,6 +32,10 @@ namespace ChatFPT.API.DI
                                .AllowAnyMethod();
                     });
             });
+        }
+        public static void AddUnitOfWork(this IServiceCollection services)
+        {
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
         public static void ConfigCorsSignalR(this IServiceCollection services)
         {

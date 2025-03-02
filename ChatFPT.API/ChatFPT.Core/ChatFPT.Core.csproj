@@ -10,4 +10,8 @@
     <PackageReference Include="Microsoft.AppCenter" Version="5.0.6" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ChatFPT.Insfracstructure\ChatFPT.Insfracstructure.csproj" />
+  </ItemGroup>
+
 </Project>

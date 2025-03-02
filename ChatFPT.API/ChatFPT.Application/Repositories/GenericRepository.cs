@@ -1,9 +1,12 @@
 ﻿namespace ChatFPT.Application.Repositories;
+
 using global::ChatFPT.Application.Interface;
+using global::ChatFPT.Core.Pagination;
 using global::ChatFPT.Insfracstructure.Base;
     using Microsoft.EntityFrameworkCore;
     using System.Collections.Generic;
-    using System.Threading.Tasks;
+using System.Linq;
+using System.Threading.Tasks;
 
 public class GenericRepository<T> : IGenericRepository<T> where T : class
 {
@@ -43,6 +46,11 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         {
             _dbSet.Remove(entity);
         }
+    }
+
+    public async Task<PaginatedList<T>> GetPagingAsync(IQueryable<T> query, int pageIndex, int pageSize)
+    {
+        return await PaginatedList<T>.CreateAsync(query, pageIndex, pageSize);
     }
 }
     

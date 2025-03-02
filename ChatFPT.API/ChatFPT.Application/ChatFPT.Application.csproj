@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ChatFPT.Core\ChatFPT.Core.csproj" />
     <ProjectReference Include="..\ChatFPT.Domain\ChatFPT.Domain.csproj" />
     <ProjectReference Include="..\ChatFPT.Insfracstructure\ChatFPT.Insfracstructure.csproj" />
   </ItemGroup>
