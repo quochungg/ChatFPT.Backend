@@ -7,6 +7,7 @@ namespace ChatFPT.Application.Interface
     public interface IGenericRepository<T> where T : class
     {
         Task<IEnumerable<T>> GetAllAsync();
+        IQueryable<T> Entities { get; }
         Task<T?> GetByIdAsync(object id);
         Task<PaginatedList<T>> GetPagingAsync(IQueryable<T> query, int pageIndex, int pageSize);
 

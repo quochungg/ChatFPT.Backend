@@ -9,12 +9,12 @@ namespace ChatFPT.Core.Pagination
         public int PageSize { get; }
         public int TotalPages { get; }
         public int TotalCount { get; }
-        public PaginatedList(IReadOnlyCollection<T>? items, int pageNumber, int pageSize, int count)
+        public PaginatedList(IReadOnlyCollection<T>? items,int count, int pageNumber, int pageSize)
         {
             PageNumber = pageNumber;
-            PageSize = pageSize;
+            TotalPages = (int)Math.Ceiling(count / (double)pageSize);
             TotalCount = count;
-            TotalPages = (int)Math.Ceiling(TotalCount / (double)pageSize);
+            PageSize = pageSize;             
             Items = items;
         }
 

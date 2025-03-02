@@ -17,7 +17,6 @@ namespace ChatFPT.API.DI
             services.ConfigRoute();
             services.AddDatabase(configuration);
             services.AddEndpointsApiExplorer();
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddUnitOfWork();
         }
         public static void ConfigCors(this IServiceCollection services)
