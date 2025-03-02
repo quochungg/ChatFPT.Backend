@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatFPT.Application", "Chat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatFPT.Service", "ChatFPT.Service\ChatFPT.Service.csproj", "{AACBC7CF-215B-42B8-9F03-3B9669B0F004}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatFPT.Core", "ChatFPT.Core\ChatFPT.Core.csproj", "{4D1857E2-8969-4BFF-A561-C7CA15D51C72}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatFPT.Core", "ChatFPT.Core\ChatFPT.Core.csproj", "{4D1857E2-8969-4BFF-A561-C7CA15D51C72}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,8 +23,8 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{75575092-92A4-4FC1-8987-A7B6F25A0FDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{75575092-92A4-4FC1-8987-A7B6F25A0FDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{75575092-92A4-4FC1-8987-A7B6F25A0FDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{75575092-92A4-4FC1-8987-A7B6F25A0FDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75575092-92A4-4FC1-8987-A7B6F25A0FDF}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{75575092-92A4-4FC1-8987-A7B6F25A0FDF}.Release|Any CPU.Build.0 = Debug|Any CPU
 		{5694736F-9D3A-48B3-8545-5A850203B81B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5694736F-9D3A-48B3-8545-5A850203B81B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5694736F-9D3A-48B3-8545-5A850203B81B}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -36,6 +36,8 @@ namespace ChatFPT.Insfracstructure.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FullName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    isGoogle = table.Column<bool>(type: "bit", nullable: false),
+                    GoogleId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     LastUpdatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     DeletedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
@@ -69,7 +71,9 @@ namespace ChatFPT.Insfracstructure.Migrations
                     CreatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastUpdateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    LastUpdateBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    LastUpdateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DeleteTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    DeleteBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -85,7 +89,9 @@ namespace ChatFPT.Insfracstructure.Migrations
                     CreatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastUpdateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    LastUpdateBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    LastUpdateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DeleteTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    DeleteBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -213,7 +219,9 @@ namespace ChatFPT.Insfracstructure.Migrations
                     CreatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastUpdateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    LastUpdateBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    LastUpdateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DeleteTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    DeleteBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -236,7 +244,9 @@ namespace ChatFPT.Insfracstructure.Migrations
                     CreatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastUpdateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    LastUpdateBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    LastUpdateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DeleteTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    DeleteBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -260,7 +270,9 @@ namespace ChatFPT.Insfracstructure.Migrations
                     CreatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastUpdateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    LastUpdateBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    LastUpdateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DeleteTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    DeleteBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -287,7 +299,9 @@ namespace ChatFPT.Insfracstructure.Migrations
                     CreatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastUpdateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    LastUpdateBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    LastUpdateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DeleteTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    DeleteBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
