@@ -1,6 +1,7 @@
 
 
 using ChatFPT.API.DI;
+using ChatFPT.API.MiddleWare;
 using ChatFPT.Service;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,7 +26,7 @@ var app = builder.Build();
         c.RoutePrefix = string.Empty;
     });
 //}
-
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

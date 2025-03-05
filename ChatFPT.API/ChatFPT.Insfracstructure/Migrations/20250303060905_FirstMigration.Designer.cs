@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChatFPT.Insfracstructure.Migrations
 {
     [DbContext(typeof(ChatBoxDBContext))]
-    [Migration("20250301101026_FirstMigration")]
+    [Migration("20250303060905_FirstMigration")]
     partial class FirstMigration
     {
         /// <inheritdoc />
@@ -141,6 +141,9 @@ namespace ChatFPT.Insfracstructure.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("MSSV")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -318,45 +321,6 @@ namespace ChatFPT.Insfracstructure.Migrations
                     b.HasIndex("TagId");
 
                     b.ToTable("QuestionTags");
-                });
-
-            modelBuilder.Entity("ChatFPT.Domain.Entities.StudentInfo", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset?>("CreatedTime")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("DeleteBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset?>("DeleteTime")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("FullName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastUpdateBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTimeOffset?>("LastUpdateTime")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("MSSV")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("StudentInfos");
                 });
 
             modelBuilder.Entity("ChatFPT.Domain.Entities.Tag", b =>
@@ -564,15 +528,6 @@ namespace ChatFPT.Insfracstructure.Migrations
                     b.Navigation("Question");
 
                     b.Navigation("Tag");
-                });
-
-            modelBuilder.Entity("ChatFPT.Domain.Entities.StudentInfo", b =>
-                {
-                    b.HasOne("ChatFPT.Domain.Entities.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
