@@ -35,6 +35,7 @@ namespace ChatFPT.Insfracstructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FullName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MSSV = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     isGoogle = table.Column<bool>(type: "bit", nullable: false),
                     GoogleId = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -234,31 +235,6 @@ namespace ChatFPT.Insfracstructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "StudentInfos",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    MSSV = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastUpdateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    LastUpdateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DeleteTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    DeleteBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_StudentInfos", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_StudentInfos_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Questions",
                 columns: table => new
                 {
@@ -402,11 +378,6 @@ namespace ChatFPT.Insfracstructure.Migrations
                 name: "IX_QuestionTags_TagId",
                 table: "QuestionTags",
                 column: "TagId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_StudentInfos_UserId",
-                table: "StudentInfos",
-                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -435,9 +406,6 @@ namespace ChatFPT.Insfracstructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "QuestionTags");
-
-            migrationBuilder.DropTable(
-                name: "StudentInfos");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

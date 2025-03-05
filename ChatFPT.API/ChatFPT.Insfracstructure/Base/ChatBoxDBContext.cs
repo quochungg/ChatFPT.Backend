@@ -12,7 +12,6 @@ namespace ChatFPT.Insfracstructure.Base
         }
         public virtual DbSet<Category> Categories { get; set; }
         public virtual DbSet<Tag> Tags { get; set; }
-        public virtual DbSet<StudentInfo> StudentInfos { get; set; }
         public virtual DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public virtual DbSet<ApplicationUserRoles> ApplicationUserRoles { get; set; }
         public virtual DbSet<ApplicationRole> ApplicationRole {  get; set; }

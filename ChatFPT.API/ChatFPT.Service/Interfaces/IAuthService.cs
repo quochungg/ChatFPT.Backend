@@ -4,12 +4,17 @@ namespace ChatFPT.Service.Interfaces
 {
     public interface IAuthService
     {
+        
         Task LoginGoogle(string token);
 
-        Task Login(string username, string password);
+        Task Login(LoginRequestModel model);
+
+        Task Register(RegisterRequestModel model);
 
         Task<UserInfoModel> GetUserInfo();
 
-        void Delete(string id);
+        Task Delete(string id);
+
+        
     }
 }
