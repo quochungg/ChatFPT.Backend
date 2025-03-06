@@ -7,11 +7,11 @@ namespace ChatFPT.Service.Interfaces
         
         Task LoginGoogle(string token);
 
-        Task Login(LoginRequestModel model);
+        Task<LoginResponse> Login(LoginRequestModel model);
 
         Task Register(RegisterRequestModel model);
 
-        Task<UserInfoModel> GetUserInfo();
+        Task<ResponseUserModel> GetUserInfo();
 
         Task Delete(string id);
 

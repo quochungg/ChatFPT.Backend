@@ -1,5 +1,6 @@
 ﻿using ChatFPT.Application.Interface;
 using ChatFPT.Application.Repositories.ChatFPT.Infrastructure.Repositories;
+using ChatFPT.Domain.Base;
 using ChatFPT.Insfracstructure.Base;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Any;
@@ -18,6 +19,23 @@ namespace ChatFPT.API.DI
             services.AddDatabase(configuration);
             services.AddEndpointsApiExplorer();
             services.AddUnitOfWork();
+            services.JwtSettingsConfig(configuration);
+        }
+        public static void JwtSettingsConfig(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddSingleton(option =>
+            {
+                JwtSettings jwtSettings = new JwtSettings
+                {
+                    SecretKey = configuration.GetValue<string>("JwtSettings:SecretKey"),
+                    Issuer = configuration.GetValue<string>("JwtSettings:Issuer"),
+                    Audience = configuration.GetValue<string>("JwtSettings:Audience"),
+                    AccessTokenExpirationMinutes = configuration.GetValue<int>("JwtSettings:AccessTokenExpirationMinutes"),
+                    RefreshTokenExpirationDays = configuration.GetValue<int>("JwtSettings:RefreshTokenExpirationDays")
+                };
+                jwtSettings.IsValid();
+                return jwtSettings;
+            });
         }
         public static void ConfigCors(this IServiceCollection services)
         {

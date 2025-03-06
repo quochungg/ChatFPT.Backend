@@ -21,6 +21,14 @@ namespace ChatFPT.API.Controllers
             return Ok(BaseResponse<string>.OkDataResponse("OK"));
         }
 
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login(LoginRequestModel model)
+        {
+            LoginResponse response = await _authService.Login(model);
+            return Ok(BaseResponse<string>.OkDataResponse(response,"Đăng nhập thành công"));
+        }
+
+
         [HttpPost("Register")]
         public async Task<IActionResult> Register(RegisterRequestModel model)
         {

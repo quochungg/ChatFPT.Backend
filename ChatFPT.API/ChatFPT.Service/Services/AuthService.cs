@@ -5,10 +5,11 @@ using ChatFPT.Application.Interface;
 using ChatFPT.Core.Constaints;
 using ChatFPT.Core.ExceptionCustom;
 using ChatFPT.Core.Models.User;
+using ChatFPT.Domain.Base;
 using ChatFPT.Domain.Entities;
+using ChatFPT.Service.Insfracstructure;
 using ChatFPT.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChatFPT.Service.Services
@@ -18,11 +19,13 @@ namespace ChatFPT.Service.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IPasswordHasher _passwordHasher;
-        public AuthService(IUnitOfWork unitOfWork, IMapper mapper, IPasswordHasher passwordHasher)
+        private readonly JwtSettings _jwtSettings;
+        public AuthService(IUnitOfWork unitOfWork, IMapper mapper, IPasswordHasher passwordHasher, JwtSettings jwtSettings)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _passwordHasher = passwordHasher;
+            _jwtSettings = jwtSettings;
         }
         public async Task Delete(string id)
         {
@@ -34,20 +37,35 @@ namespace ChatFPT.Service.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public Task<UserInfoModel> GetUserInfo()
+        public Task<ResponseUserModel> GetUserInfo()
         {
             throw new NotImplementedException();
         }
 
-        public async Task Login(LoginRequestModel model)
+        public async Task<LoginResponse> Login(LoginRequestModel model)
         {
-            ApplicationUser user = await _unitOfWork.GetRepository<ApplicationUser>().Entities.FirstOrDefaultAsync(u => u.UserName == model.UserName && !u.DeletedTime.HasValue)
+            IQueryable<LoginQueryModel> queryModels = from user in _unitOfWork.GetRepository<ApplicationUser>().Entities
+                                                      join userRole in _unitOfWork.GetRepository<ApplicationUserRoles>().Entities on user.Id equals userRole.UserId
+                                                      join role in _unitOfWork.GetRepository<ApplicationRole>().Entities on userRole.RoleId equals role.Id
+                                                      where !user.DeletedTime.HasValue
+                                                      select new LoginQueryModel()
+                                                      {
+                                                          User = user,
+                                                          RoleName = role.Name,
+                                                      };
+
+            LoginQueryModel? result = await queryModels.FirstOrDefaultAsync()
                 ?? throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "Sai tên đăng nhập hoặc mật khẩu");
 
-            if(!_passwordHasher.Verify(user.PasswordHash!, model.Password))
+            if(!_passwordHasher.Verify(result.User!.PasswordHash!, model.Password))
             {
                  throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "Sai tên đăng nhập hoặc mật khẩu");
             }
+
+            return new LoginResponse()
+            {
+                TokenResponse = await Authentication.CreateToken(result.User!,result.RoleName!, _jwtSettings)
+            };
         }
 
         public async Task LoginGoogle(string token)
@@ -63,8 +81,11 @@ namespace ChatFPT.Service.Services
                  throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "UserName bị trùng");
             }
                
-            _passwordHasher.Hash(model.PasswordHash);
+            var passwordHash = _passwordHasher.Hash(model.PasswordHash);
+            
             ApplicationUser user = _mapper.Map<ApplicationUser>(model);
+            user.Password = passwordHash;
+            user.PasswordHash = passwordHash;
             user.CreatedTime = DateTime.Now;
             
             await _unitOfWork.GetRepository<ApplicationUser>().AddAsync(user);
