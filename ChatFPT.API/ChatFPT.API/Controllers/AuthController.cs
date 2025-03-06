@@ -28,6 +28,13 @@ namespace ChatFPT.API.Controllers
             return Ok(BaseResponse<string>.OkDataResponse(response,"Đăng nhập thành công"));
         }
 
+        [HttpPost("RefreshToken")]
+        public async Task<IActionResult> RefreshToken(RefreshTokenRequestModel model)
+        {
+            TokenResponse response = await _authService.RefreshToken(model);
+            return Ok(BaseResponse<string>.OkDataResponse(response, "Tạo mới token thành công"));
+        }
+
 
         [HttpPost("Register")]
         public async Task<IActionResult> Register(RegisterRequestModel model)

@@ -15,6 +15,8 @@ namespace ChatFPT.Service.Interfaces
 
         Task Delete(string id);
 
-        
+        Task<TokenResponse> RefreshToken(RefreshTokenRequestModel request);
+
+
     }
 }

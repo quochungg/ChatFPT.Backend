@@ -11,6 +11,10 @@ using ChatFPT.Service.Insfracstructure;
 using ChatFPT.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace ChatFPT.Service.Services
 {
@@ -20,12 +24,14 @@ namespace ChatFPT.Service.Services
         private readonly IMapper _mapper;
         private readonly IPasswordHasher _passwordHasher;
         private readonly JwtSettings _jwtSettings;
-        public AuthService(IUnitOfWork unitOfWork, IMapper mapper, IPasswordHasher passwordHasher, JwtSettings jwtSettings)
+        private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler;
+        public AuthService(IUnitOfWork unitOfWork, IMapper mapper, IPasswordHasher passwordHasher, JwtSettings jwtSettings, JwtSecurityTokenHandler jwtSecurityTokenHandler)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _passwordHasher = passwordHasher;
             _jwtSettings = jwtSettings;
+            _jwtSecurityTokenHandler = jwtSecurityTokenHandler;
         }
         public async Task Delete(string id)
         {
@@ -68,6 +74,34 @@ namespace ChatFPT.Service.Services
             };
         }
 
+        public async Task<TokenResponse> RefreshToken(RefreshTokenRequestModel request)
+        {           
+
+            // 1. Xác thực refresh token
+            ClaimsPrincipal? principal = ValidateRefreshToken(request.RefreshToken ?? "");
+
+            // check nếu valid thành công sẽ trả về thông tin người dùng
+            if (principal == null)
+            {
+                throw new ErrorException(StatusCodes.Status401Unauthorized, ResponseCodeConstaints.UNAUTHORIZED, "Refresh token không hợp lệ.");
+            }
+
+            string? userId = principal.FindFirst("id")?.Value;
+            string? userRole = principal.FindFirst(ClaimTypes.Role)?.Value;
+
+            ApplicationUser user = await _unitOfWork.GetRepository<ApplicationUser>().Entities.Where(u => u.Id.ToString() == userId).FirstOrDefaultAsync()
+                ?? throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "Không tìm thấy người dùng");
+
+            // 2. Tạo token mới
+            TokenResponse response = await Authentication.CreateToken(user, userRole!, _jwtSettings, true);
+            response.RefreshToken = string.Empty;
+            response.User = null;
+
+            return response;
+        }
+
+        
+
         public async Task LoginGoogle(string token)
         {
             
@@ -97,6 +131,21 @@ namespace ChatFPT.Service.Services
             };
             await _unitOfWork.GetRepository<ApplicationUserRoles>().AddAsync(userRole);
             await _unitOfWork.SaveAsync();
+        }
+
+        private ClaimsPrincipal ValidateRefreshToken(string refreshToken)
+        {
+            // khởi tạo thông tin xác thực cho token  
+            TokenValidationParameters validationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey ?? string.Empty)),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ClockSkew = TimeSpan.Zero
+            };
+
+            return _jwtSecurityTokenHandler.ValidateToken(refreshToken, validationParameters, out _);
         }
     }      
 }   
