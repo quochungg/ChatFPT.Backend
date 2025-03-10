@@ -65,15 +65,15 @@ namespace ChatFPT.Service.Services
 
         public async Task UpdateRole(UpdateRoleModel model)
         {
-            model.ValidateFields();
-            ApplicationRole role = await _unitOfWork.GetRepository<ApplicationRole>().Entities.FirstOrDefaultAsync(r => r.Id == model.Id && !r.DeletedTime.HasValue)
-                ?? throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "Không tìm thấy RoleId");
+                model.ValidateFields();
+                ApplicationRole role = await _unitOfWork.GetRepository<ApplicationRole>().Entities.FirstOrDefaultAsync(r => r.Id == model.Id && !r.DeletedTime.HasValue)
+                    ?? throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "Không tìm thấy RoleId");
 
-            _mapper.Map(model, role);
-            role.LastUpdatedTime = DateTime.UtcNow;
-            role.NormalizedName = model.Name!.ToUpper();
-            await _unitOfWork.GetRepository<ApplicationRole>().UpdateAsync(role);
-            await _unitOfWork.SaveAsync();
+                _mapper.Map(model, role);
+                role.LastUpdatedTime = DateTime.UtcNow;
+                role.NormalizedName = model.Name!.ToUpper();
+                await _unitOfWork.GetRepository<ApplicationRole>().UpdateAsync(role);
+                await _unitOfWork.SaveAsync();
         }
     }
 }

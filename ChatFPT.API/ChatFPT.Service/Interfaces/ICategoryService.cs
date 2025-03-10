@@ -5,14 +5,15 @@ namespace ChatFPT.Service.Interfaces
 {
     public interface ICategoryService
     {
-        Task<PaginatedList<CategoryModel>> GetCategoriesAsync(string? searchName , int index , int PageSize);
+        Task<PaginatedList<ResponseCategoryModel>> GetCategoriesAsync(string? searchName , int index , int PageSize);
 
-        Task<CategoryModel> GetCategoryId(int id);
+        Task<ResponseCategoryModel> GetCategoryId(string id);
+
         Task CreateCategoryAsync(CreateCategoryModel model);
 
-        Task UpdateCategoryAsync(CategoryModel model);
+        Task UpdateCategoryAsync(UpdateCategoryModel model);
 
-        Task DeleteCategoryAsync(int id);
+        Task DeleteCategoryAsync(string id);
 
     }
 }
