@@ -12,10 +12,6 @@ namespace ChatFPT.Domain.Entities
         
         public string? Content { get; set; }
 
-        public string? CategoryId { get; set; }
-
-        public virtual Category? Category { get; set; }
-
         public bool IsResolve { get; set; }
 
     }
