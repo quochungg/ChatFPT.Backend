@@ -26,10 +26,7 @@ namespace ChatFPT.Service.Services
         }
         public async Task CreateQuestion(RequestQuestionModel model)
         {
-            if (await _unitOfWork.GetRepository<Category>().Entities.FirstOrDefaultAsync(c => c.Id == model.CategoryId) == null)
-            {
-                throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "CategoryId không tồn tại");
-            }
+            
             Question question = _mapper.Map<Question>(model);
             question.UserId = Guid.Parse(Authentication.GetUserIdFromHttpContextAccessor(_contextAccessor));
             question.CreatedTime = DateTime.Now;
@@ -57,7 +54,6 @@ namespace ChatFPT.Service.Services
                                                       select new ResponseQuestionModel()
                                                       {
                                                           UserId = question.UserId.ToString(),
-                                                          CategoryId = question.CategoryId,
                                                           Content = question.Content,
                                                           IsResolve = question.IsResolve,
                                                       };
@@ -82,12 +78,7 @@ namespace ChatFPT.Service.Services
         }
 
         public async Task UpdateQuestion(UpdateQuestionModel model)
-        {
-            if (await _unitOfWork.GetRepository<Category>().Entities.FirstOrDefaultAsync(c => c.Id == model.CategoryId) == null)
-            {
-                throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "CategoryId không tồn tại");
-            }
-
+        {           
             Question question = await _unitOfWork.GetRepository<Question>().Entities.FirstOrDefaultAsync(q => q.Id == model.Id)
               ?? throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "CategoryId không tồn tại");
 

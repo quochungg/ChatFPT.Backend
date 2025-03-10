@@ -9,7 +9,7 @@ using ChatFPT.Core.Models.Role;
 using ChatFPT.Core.Pagination;
 using ChatFPT.Core.Utils;
 using ChatFPT.Domain.Entities;
-
+using ChatFPT.Service.Insfracstructure;
 using ChatFPT.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +20,8 @@ namespace ChatFPT.Service.Services
     {
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
-        public CategoryService(IMapper mapper, IUnitOfWork unitOfWork)
+        private readonly IHttpContextAccessor _contextAccessor;
+        public CategoryService(IMapper mapper, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
@@ -29,6 +30,8 @@ namespace ChatFPT.Service.Services
         {
             model.ValidateFields();
             Category category = _mapper.Map<Category>(model);
+            category.CreatedBy = Authentication.GetUserIdFromHttpContextAccessor(_contextAccessor);
+            category.CreatedTime = DateTime.Now;
             await _unitOfWork.GetRepository<Category>().AddAsync(category);
             await _unitOfWork.SaveAsync();
 
@@ -39,7 +42,8 @@ namespace ChatFPT.Service.Services
             Category category = await _unitOfWork.GetRepository<Category>().Entities.FirstOrDefaultAsync(r => r.Id == id && !r.DeleteTime.HasValue)
                    ?? throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "Không tìm thấy ID");
 
-            category.DeleteTime = DateTime.UtcNow;
+            category.DeleteTime = DateTime.Now;
+            category.DeleteBy = Authentication.GetUserIdFromHttpContextAccessor(_contextAccessor);
             await _unitOfWork.GetRepository<Category>().UpdateAsync(category);
             await _unitOfWork.SaveAsync();
         }
@@ -89,8 +93,9 @@ namespace ChatFPT.Service.Services
                 ?? throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "Không tìm thấy CategoryId");
 
             _mapper.Map(model, cate);
-            cate.LastUpdateTime = DateTime.UtcNow;
-            cate.LastUpdateBy = model.UpdateBy;
+            cate.LastUpdateTime = DateTime.Now;
+            cate.LastUpdateBy = Authentication.GetUserIdFromHttpContextAccessor(_contextAccessor);
+            
                  await _unitOfWork.GetRepository<Category>().UpdateAsync(cate);
             await _unitOfWork.SaveAsync();
         }
