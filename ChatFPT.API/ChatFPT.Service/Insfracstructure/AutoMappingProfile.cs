@@ -13,6 +13,8 @@ namespace ChatFPT.Service.Insfracstructure
         public AutoMappingProfile() {
             CreateMap<Category, CreateCategoryModel>().ReverseMap();
             CreateMap<Category, CategoryModel>().ReverseMap();
+            CreateMap<Category, UpdateCategoryModel>().ReverseMap();
+            CreateMap<Category, ResponseCategoryModel>().ReverseMap();
             CreateMap<ApplicationRole,ResponseRoleModel>().ReverseMap();
             CreateMap<ApplicationRole,CreateRoleModel>().ReverseMap();
             CreateMap<ApplicationRole,UpdateRoleModel>().ReverseMap();
