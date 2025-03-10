@@ -18,7 +18,7 @@ namespace ChatFPT.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllRoleAsync(string? searchName, int index, int PageSize) {
+        public async Task<IActionResult> GetAllRoleAsync(string? searchName, int index = 1, int PageSize = 10) {
             PaginatedList<ResponseRoleModel> list = await _roleService.GetAllRole(searchName, index, PageSize);
             return Ok(BaseResponse<IReadOnlyCollection<ResponseRoleModel>>.OkDataResponse(list, "Lấy danh sách thành công"));
         }

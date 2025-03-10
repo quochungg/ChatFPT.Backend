@@ -1,6 +1,7 @@
 
 
 using ChatFPT.API.DI;
+using ChatFPT.API.Middleware;
 using ChatFPT.API.MiddleWare;
 using ChatFPT.Service;
 
@@ -12,7 +13,7 @@ builder.Services.AddControllers();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddHttpClient();
-
+builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -27,9 +28,11 @@ var app = builder.Build();
     });
 //}
 app.UseMiddleware<ExceptionMiddleware>();
+app.UseMiddleware<PermissionMiddleware>();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+app.UseAuthentication();
 
 app.MapControllers();
 

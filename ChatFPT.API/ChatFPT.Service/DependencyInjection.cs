@@ -15,6 +15,7 @@ namespace ChatFPT.Service
             services.AddServices(configuration);
             services.AddHttpClient();
             services.AddMemoryCache();
+            services.AddSingleton<JwtSecurityTokenHandler>();
             
         }
         public static void AddServices(this IServiceCollection services, IConfiguration configuration)
@@ -25,6 +26,7 @@ namespace ChatFPT.Service
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
+            services.AddScoped<IQuestionService, QuestionService>();
             
         }
         private static void AddAutoMapper(this IServiceCollection services)

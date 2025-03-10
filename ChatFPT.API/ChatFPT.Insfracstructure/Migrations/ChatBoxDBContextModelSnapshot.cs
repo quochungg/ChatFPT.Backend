@@ -227,6 +227,9 @@ namespace ChatFPT.Insfracstructure.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("AnswerId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -251,12 +254,9 @@ namespace ChatFPT.Insfracstructure.Migrations
                     b.Property<int?>("Rate")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("AnswerId");
 
                     b.ToTable("Feedbacks");
                 });
@@ -264,9 +264,6 @@ namespace ChatFPT.Insfracstructure.Migrations
             modelBuilder.Entity("ChatFPT.Domain.Entities.Question", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("CategoryId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Content")
@@ -298,8 +295,6 @@ namespace ChatFPT.Insfracstructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId");
-
                     b.HasIndex("UserId");
 
                     b.ToTable("Questions");
@@ -325,6 +320,9 @@ namespace ChatFPT.Insfracstructure.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("CategoryId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -347,6 +345,8 @@ namespace ChatFPT.Insfracstructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
 
                     b.ToTable("Tags");
                 });
@@ -490,24 +490,18 @@ namespace ChatFPT.Insfracstructure.Migrations
 
             modelBuilder.Entity("ChatFPT.Domain.Entities.Feedback", b =>
                 {
-                    b.HasOne("ChatFPT.Domain.Entities.ApplicationUser", "User")
+                    b.HasOne("ChatFPT.Domain.Entities.Answer", "Answer")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("AnswerId");
 
-                    b.Navigation("User");
+                    b.Navigation("Answer");
                 });
 
             modelBuilder.Entity("ChatFPT.Domain.Entities.Question", b =>
                 {
-                    b.HasOne("ChatFPT.Domain.Entities.Category", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId");
-
                     b.HasOne("ChatFPT.Domain.Entities.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
-
-                    b.Navigation("Category");
 
                     b.Navigation("User");
                 });
@@ -525,6 +519,15 @@ namespace ChatFPT.Insfracstructure.Migrations
                     b.Navigation("Question");
 
                     b.Navigation("Tag");
+                });
+
+            modelBuilder.Entity("ChatFPT.Domain.Entities.Tag", b =>
+                {
+                    b.HasOne("ChatFPT.Domain.Entities.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId");
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
