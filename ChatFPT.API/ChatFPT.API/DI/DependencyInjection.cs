@@ -2,10 +2,14 @@
 using ChatFPT.Application.Repositories.ChatFPT.Infrastructure.Repositories;
 using ChatFPT.Domain.Base;
 using ChatFPT.Insfracstructure.Base;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+using System.Text;
 
 namespace ChatFPT.API.DI
 {
@@ -20,6 +24,7 @@ namespace ChatFPT.API.DI
             services.AddEndpointsApiExplorer();
             services.AddUnitOfWork();
             services.JwtSettingsConfig(configuration);
+            services.AddAuthenJwt();
         }
         public static void JwtSettingsConfig(this IServiceCollection services, IConfiguration configuration)
         {
@@ -138,6 +143,32 @@ namespace ChatFPT.API.DI
             services.AddDbContext<ChatBoxDBContext>(options =>
             {
                 options.UseSqlServer(configuration.GetConnectionString("DefaultSQLConnection"));
+            });
+        }
+        public static void AddAuthenJwt(this IServiceCollection services)
+        {
+            var serviceProvider = services.BuildServiceProvider();
+            var jwtSettings = serviceProvider.GetRequiredService<JwtSettings>();
+            services.AddAuthentication(e =>
+            {
+                e.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                e.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(e =>
+            {
+                e.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtSettings.Issuer,
+                    ClockSkew = TimeSpan.Zero,
+                    ValidAudience = jwtSettings.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey!))
+
+                };
+                e.SaveToken = true;
+                e.RequireHttpsMetadata = true;
             });
         }
     }
