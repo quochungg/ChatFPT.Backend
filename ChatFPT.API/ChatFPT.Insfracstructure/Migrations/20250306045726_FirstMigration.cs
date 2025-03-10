@@ -210,31 +210,6 @@ namespace ChatFPT.Insfracstructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Feedbacks",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Rate = table.Column<int>(type: "int", nullable: true),
-                    Note = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastUpdateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    LastUpdateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DeleteTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    DeleteBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Feedbacks", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Feedbacks_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Questions",
                 columns: table => new
                 {
@@ -310,6 +285,31 @@ namespace ChatFPT.Insfracstructure.Migrations
                         principalColumn: "Id");
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Feedbacks",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    AnswerId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Rate = table.Column<int>(type: "int", nullable: true),
+                    Note = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastUpdateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LastUpdateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DeleteTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    DeleteBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Feedbacks", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Feedbacks_Answers_AnswerId",
+                        column: x => x.AnswerId,
+                        principalTable: "Answers",
+                        principalColumn: "Id");
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Answers_QuestionId",
                 table: "Answers",
@@ -355,9 +355,9 @@ namespace ChatFPT.Insfracstructure.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Feedbacks_UserId",
+                name: "IX_Feedbacks_AnswerId",
                 table: "Feedbacks",
-                column: "UserId");
+                column: "AnswerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Questions_CategoryId",
@@ -384,9 +384,6 @@ namespace ChatFPT.Insfracstructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Answers");
-
-            migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
             migrationBuilder.DropTable(
@@ -411,10 +408,13 @@ namespace ChatFPT.Insfracstructure.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Questions");
+                name: "Answers");
 
             migrationBuilder.DropTable(
                 name: "Tags");
+
+            migrationBuilder.DropTable(
+                name: "Questions");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
