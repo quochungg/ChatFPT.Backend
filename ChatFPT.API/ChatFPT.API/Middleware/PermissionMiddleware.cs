@@ -20,6 +20,9 @@ namespace ChatFPT.API.Middleware
             _excludedUris =
             [
                 "/api/auth/login",
+                "/api/role",
+                "/api/auth/logingoogle",
+                "/api/auth/register"
             ];
         }
 

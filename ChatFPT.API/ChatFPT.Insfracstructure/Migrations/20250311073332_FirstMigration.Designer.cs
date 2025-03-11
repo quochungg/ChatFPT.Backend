@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChatFPT.Insfracstructure.Migrations
 {
     [DbContext(typeof(ChatBoxDBContext))]
-    [Migration("20250310035903_FirstMigration")]
+    [Migration("20250311073332_FirstMigration")]
     partial class FirstMigration
     {
         /// <inheritdoc />
