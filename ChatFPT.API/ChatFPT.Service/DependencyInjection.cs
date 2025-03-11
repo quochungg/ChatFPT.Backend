@@ -27,6 +27,7 @@ namespace ChatFPT.Service
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<IQuestionService, QuestionService>();
+            services.AddScoped<IFeedBackService, FeedbackService>();
             
         }
         private static void AddAutoMapper(this IServiceCollection services)

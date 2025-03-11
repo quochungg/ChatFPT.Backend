@@ -2,6 +2,7 @@
 
 using AutoMapper;
 using ChatFPT.Core.Models.Category;
+using ChatFPT.Core.Models.Feedback;
 using ChatFPT.Core.Models.Question;
 using ChatFPT.Core.Models.Role;
 using ChatFPT.Core.Models.User;
@@ -24,6 +25,10 @@ namespace ChatFPT.Service.Insfracstructure
             CreateMap<Question,RequestQuestionModel>().ReverseMap();
             CreateMap<Question,ResponseQuestionModel>().ReverseMap();
             CreateMap<Question,UpdateQuestionModel>().ReverseMap();
+
+            CreateMap<Feedback, CreateFeedbackModel>().ReverseMap();
+            CreateMap<Feedback, ResponseFeedbackModel>().ReverseMap();
+            CreateMap<Feedback, UpdateFeedbackModel>().ReverseMap();
         }
     }
 }
