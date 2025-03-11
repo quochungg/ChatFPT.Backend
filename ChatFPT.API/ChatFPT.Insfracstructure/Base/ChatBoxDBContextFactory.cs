@@ -12,7 +12,7 @@ namespace ChatFPT.Insfracstructure.Base
         {
             var builder = new DbContextOptionsBuilder<ChatBoxDBContext>();
 
-            builder.UseSqlServer("Server=.;Database=ChatBoxFPT;uid=sa;pwd=12345;Trusted_Connection=True;TrustServerCertificate=true;MultipleActiveResultSets=true;");
+            builder.UseSqlServer("Server=tcp:chatfpt.database.windows.net,1433;Initial Catalog=ChatBoxFPT;Persist Security Info=False;User ID=chatfpt;Password=Admin@123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
 
             return new ChatBoxDBContext(builder.Options);
         }

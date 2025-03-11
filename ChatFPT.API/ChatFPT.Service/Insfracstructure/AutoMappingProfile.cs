@@ -17,6 +17,7 @@ namespace ChatFPT.Service.Insfracstructure
             CreateMap<Category, CategoryModel>().ReverseMap();
             CreateMap<Category, UpdateCategoryModel>().ReverseMap();
             CreateMap<Category, ResponseCategoryModel>().ReverseMap();
+
             CreateMap<ApplicationRole,ResponseRoleModel>().ReverseMap();
             CreateMap<ApplicationRole,CreateRoleModel>().ReverseMap();
             CreateMap<ApplicationRole,UpdateRoleModel>().ReverseMap();
