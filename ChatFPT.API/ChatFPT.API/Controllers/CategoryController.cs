@@ -1,6 +1,7 @@
 ﻿
 using ChatFPT.Core.Base;
 using ChatFPT.Core.Models.Category;
+using ChatFPT.Core.Models.Feedback;
 using ChatFPT.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;

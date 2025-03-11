@@ -8,6 +8,5 @@ namespace ChatFPT.Domain.Entities
         public string? AnswerId {  get; set; }
         public virtual Answer? Answer { get; set; }
         public int? Rate { get; set; }
-        public string? Note { get; set; }      
-    }
+      }
 }
