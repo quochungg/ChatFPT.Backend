@@ -1,10 +1,8 @@
 ﻿
 using ChatFPT.Core.Base;
-using ChatFPT.Core.Models.Category;
 using ChatFPT.Core.Models.Feedback;
 using ChatFPT.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 
 namespace ChatFPT.API.Controllers
 {
@@ -39,9 +37,9 @@ namespace ChatFPT.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetFeedback(string? CreatedById, int index = 1, int pageSize = 10)
+        public async Task<IActionResult> GetFeedback(string? searchName, int index = 1, int pageSize = 10)
         {
-            var data = await _feedbackService.GetFeedbacksAsync(CreatedById, index, pageSize);
+            var data = await _feedbackService.GetFeedbacksAsync(searchName, index, pageSize);
             return Ok(BaseResponseModel<IReadOnlyCollection<ResponseFeedbackModel>>.OkDataResponse(data, "Lấy data thành công"));
         }
 

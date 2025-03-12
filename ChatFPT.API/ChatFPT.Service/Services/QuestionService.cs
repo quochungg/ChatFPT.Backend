@@ -26,12 +26,21 @@ namespace ChatFPT.Service.Services
         }
         public async Task CreateQuestion(RequestQuestionModel model)
         {
-            
+            Tag tag = await _unitOfWork.GetRepository<Tag>().Entities.FirstOrDefaultAsync(t => t.Id == model.TagId && !t.DeleteTime.HasValue)
+                ?? throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "Tag không tồn tại");
             Question question = _mapper.Map<Question>(model);
             question.UserId = Guid.Parse(Authentication.GetUserIdFromHttpContextAccessor(_contextAccessor));
             question.CreatedTime = DateTime.Now;
             question.CreatedBy = Authentication.GetUserIdFromHttpContextAccessor(_contextAccessor);
             await _unitOfWork.GetRepository<Question>().AddAsync(question);
+            await _unitOfWork.SaveAsync();
+
+            QuestionTag questionTag = new QuestionTag()
+            {
+                TagId = model.TagId,
+                QuestionId = question.Id,
+            };
+            await _unitOfWork.GetRepository<QuestionTag>().AddAsync(questionTag);
             await _unitOfWork.SaveAsync();
         }
 
@@ -50,11 +59,14 @@ namespace ChatFPT.Service.Services
         public async Task<PaginatedList<ResponseQuestionModel>> GetAllQuestion(string? searchName, int index = 1, int PageSize = 10)
         {
             IQueryable<ResponseQuestionModel> query = from question in _unitOfWork.GetRepository<Question>().Entities
+                                                      join questionTag in _unitOfWork.GetRepository<QuestionTag>().Entities on question.Id equals questionTag.QuestionId
+                                                      join tag in _unitOfWork.GetRepository<Tag>().Entities on questionTag.TagId equals tag.Id
                                                       where !question.DeleteTime.HasValue
                                                       select new ResponseQuestionModel()
                                                       {
                                                           UserId = question.UserId.ToString(),
                                                           Content = question.Content,
+                                                          TagName = tag.Name,
                                                           IsResolve = question.IsResolve,
                                                       };
 
@@ -72,7 +84,11 @@ namespace ChatFPT.Service.Services
                 .FirstOrDefaultAsync(q => q.Id == id && !q.DeleteTime.HasValue)
                 ?? throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "Không tìm thấy question id");
 
+            QuestionTag? questionTag = await _unitOfWork.GetRepository<QuestionTag>().Entities.FirstOrDefaultAsync(qt => qt.QuestionId == model.Id);
+            Tag? tag = await _unitOfWork.GetRepository<Tag>().Entities.FirstOrDefaultAsync(t => t.Id == questionTag!.TagId);
+
             ResponseQuestionModel responseQuestionModel = _mapper.Map<ResponseQuestionModel>(model);
+            responseQuestionModel.TagName = tag!.Name;
 
             return responseQuestionModel;
         }
@@ -80,12 +96,15 @@ namespace ChatFPT.Service.Services
         public async Task UpdateQuestion(UpdateQuestionModel model)
         {           
             Question question = await _unitOfWork.GetRepository<Question>().Entities.FirstOrDefaultAsync(q => q.Id == model.Id)
-              ?? throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "CategoryId không tồn tại");
+              ?? throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "QuestionId không tồn tại");
 
+            QuestionTag? questionTag = await _unitOfWork.GetRepository<QuestionTag>().Entities.FirstOrDefaultAsync(qt => qt.QuestionId == model.Id);
+            questionTag!.TagId = model.TagId;
             _mapper.Map(model, question);
             question.LastUpdateBy = Authentication.GetUserIdFromHttpContextAccessor(_contextAccessor);
             question.LastUpdateTime = DateTime.Now;
             await _unitOfWork.GetRepository<Question>().UpdateAsync(question);
+            await _unitOfWork.GetRepository<QuestionTag>().UpdateAsync(questionTag);
             await _unitOfWork.SaveAsync();
         }
     }

@@ -25,6 +25,7 @@ namespace ChatFPT.Service.Services
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
+            _contextAccessor = httpContextAccessor;
         }
         public async Task CreateCategoryAsync(CreateCategoryModel model)
         {

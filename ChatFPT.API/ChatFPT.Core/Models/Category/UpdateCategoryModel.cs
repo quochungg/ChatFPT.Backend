@@ -9,7 +9,6 @@ namespace ChatFPT.Core.Models.Category
     public class UpdateCategoryModel
     {
         public string Id { get; set; }
-        public string UpdateBy { get; set; }
         public string? CategoryName { get; set; }
         public string? Description { get; set; }
 

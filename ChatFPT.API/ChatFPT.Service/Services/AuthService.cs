@@ -25,13 +25,19 @@ namespace ChatFPT.Service.Services
         private readonly IPasswordHasher _passwordHasher;
         private readonly JwtSettings _jwtSettings;
         private readonly JwtSecurityTokenHandler _jwtSecurityTokenHandler;
-        public AuthService(IUnitOfWork unitOfWork, IMapper mapper, IPasswordHasher passwordHasher, JwtSettings jwtSettings, JwtSecurityTokenHandler jwtSecurityTokenHandler)
+        private readonly IHttpContextAccessor _contextAccessor;
+        public AuthService(IUnitOfWork unitOfWork, IMapper mapper
+            , IPasswordHasher passwordHasher
+            , JwtSettings jwtSettings
+            , JwtSecurityTokenHandler jwtSecurityTokenHandler
+            , IHttpContextAccessor httpContextAccessor)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _passwordHasher = passwordHasher;
             _jwtSettings = jwtSettings;
             _jwtSecurityTokenHandler = jwtSecurityTokenHandler;
+            _contextAccessor = httpContextAccessor;
         }
         public async Task Delete(string id)
         {
@@ -43,9 +49,16 @@ namespace ChatFPT.Service.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public Task<ResponseUserModel> GetUserInfo()
+        public async Task<UserInfoModel> GetUserInfo()
         {
-            throw new NotImplementedException();
+            ApplicationUser? user = await _unitOfWork.GetRepository<ApplicationUser>().Entities.FirstOrDefaultAsync
+
+                (u => u.Id.ToString() == Authentication.GetUserIdFromHttpContextAccessor(_contextAccessor));
+
+            UserInfoModel model = _mapper.Map<UserInfoModel>(user);
+
+            return model;
+                
         }
 
         public async Task<LoginResponse> Login(LoginRequestModel model)
@@ -53,7 +66,7 @@ namespace ChatFPT.Service.Services
             IQueryable<LoginQueryModel> queryModels = from user in _unitOfWork.GetRepository<ApplicationUser>().Entities
                                                       join userRole in _unitOfWork.GetRepository<ApplicationUserRoles>().Entities on user.Id equals userRole.UserId
                                                       join role in _unitOfWork.GetRepository<ApplicationRole>().Entities on userRole.RoleId equals role.Id
-                                                      where !user.DeletedTime.HasValue
+                                                      where !user.DeletedTime.HasValue && user.UserName == model.UserName
                                                       select new LoginQueryModel()
                                                       {
                                                           User = user,

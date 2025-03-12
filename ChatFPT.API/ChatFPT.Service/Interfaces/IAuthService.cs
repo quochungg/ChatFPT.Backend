@@ -11,7 +11,7 @@ namespace ChatFPT.Service.Interfaces
 
         Task Register(RegisterRequestModel model);
 
-        Task<ResponseUserModel> GetUserInfo();
+        Task<UserInfoModel> GetUserInfo();
 
         Task Delete(string id);
 

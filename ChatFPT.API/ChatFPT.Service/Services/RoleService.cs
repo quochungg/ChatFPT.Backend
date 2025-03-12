@@ -27,8 +27,7 @@ namespace ChatFPT.Service.Services
             ApplicationRole role = _mapper.Map<ApplicationRole>(model);
             role.NormalizedName = model.Name!.ToUpper();
             await _unitOfWork.GetRepository<ApplicationRole>().AddAsync(role);
-            await _unitOfWork.SaveAsync();
-           
+            await _unitOfWork.SaveAsync();          
         }
 
         public async Task DeleteRole(Guid roleId)

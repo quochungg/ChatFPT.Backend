@@ -4,11 +4,8 @@ using AutoMapper;
 using ChatFPT.Application.Interface;
 using ChatFPT.Core.Constaints;
 using ChatFPT.Core.ExceptionCustom;
-using ChatFPT.Core.Models.Category;
 using ChatFPT.Core.Models.Feedback;
-using ChatFPT.Core.Models.Role;
 using ChatFPT.Core.Pagination;
-using ChatFPT.Core.Utils;
 using ChatFPT.Domain.Entities;
 using ChatFPT.Service.Insfracstructure;
 using ChatFPT.Service.Interfaces;
@@ -26,6 +23,7 @@ namespace ChatFPT.Service.Services
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
+            _contextAccessor = httpContextAccessor;
         }
         public async Task CreateFeedbackAsync(CreateFeedbackModel model)
         {
@@ -49,22 +47,23 @@ namespace ChatFPT.Service.Services
 
         public async Task<PaginatedList<ResponseFeedbackModel>> GetFeedbacksAsync(string? searchName, int index, int PageSize)
         {
-            IQueryable<ResponseFeedbackModel> query = from feedback in
-                                              _unitOfWork.GetRepository<Feedback>().Entities
+            IQueryable<ResponseFeedbackModel> query = from feedback in _unitOfWork.GetRepository<Feedback>().Entities
+                                                      join answer in _unitOfWork.GetRepository<Answer>().Entities on feedback.AnswerId equals answer.Id
+                                                      join question in _unitOfWork.GetRepository<Question>().Entities on answer.QuestionId equals question.Id
                                                       where !feedback.DeleteTime.HasValue
                                                       select new ResponseFeedbackModel
                                                       {
                                                           AnswerId = feedback.AnswerId,
                                                           Rate = feedback.Rate,
+                                                          Note = feedback.Note,
                                                           CreatedTime = feedback.CreatedTime,
-                                                          CreatedBy = feedback.CreatedBy,
-                                                          LastUpdatedBy = feedback.LastUpdateBy,
-                                                          LastUpdatedTime = feedback.LastUpdateTime
+                                                          AnswerContent = answer.Content,
+                                                          QuestionContent = question.Content,
                                                       };
 
             if (!string.IsNullOrWhiteSpace(searchName))
             {
-                query = query.Where(s => s.CreatedBy!.Contains(searchName));
+                query = query.Where(s => s.Note!.Contains(searchName));
             }
 
             PaginatedList<ResponseFeedbackModel> paginatedFeedback = await _unitOfWork.GetRepository<ResponseFeedbackModel>().GetPagingAsync(query, index, PageSize);
@@ -75,13 +74,18 @@ namespace ChatFPT.Service.Services
         {
             Feedback feedback = await _unitOfWork.GetRepository<Feedback>().Entities.FirstOrDefaultAsync(r => r.Id == id && !r.DeleteTime.HasValue)
                 ?? throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "Không tìm thấy Id");
+
+            Answer? answer = await _unitOfWork.GetRepository<Answer>().Entities.FirstOrDefaultAsync(a => a.Id == feedback.AnswerId);
+
+            Question? question = await _unitOfWork.GetRepository<Question>().Entities.FirstOrDefaultAsync(qt => qt.Id == answer.QuestionId);
             return new ResponseFeedbackModel
             {
                 AnswerId = feedback.Id,
-                CreatedBy = feedback.CreatedBy,
                 Rate = feedback.Rate,
-                LastUpdatedBy = feedback.LastUpdateBy,
-                LastUpdatedTime = feedback.LastUpdateTime
+                Note = feedback.Note,
+                AnswerContent = answer!.Content,
+                QuestionContent = question!.Content,
+                CreatedTime = feedback.CreatedTime,
             };
         }
 

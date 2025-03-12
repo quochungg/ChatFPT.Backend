@@ -16,6 +16,8 @@ namespace ChatFPT.Insfracstructure.Base
         public virtual DbSet<ApplicationUserRoles> ApplicationUserRoles { get; set; }
         public virtual DbSet<ApplicationRole> ApplicationRole {  get; set; }
 
+        public virtual DbSet<ApplicationRoleClaims> ApplicationRoleClaims { get; set; }
+
         public virtual DbSet<Answer> Answers { get; set; }
 
         public virtual DbSet<Feedback> Feedbacks { get; set; }

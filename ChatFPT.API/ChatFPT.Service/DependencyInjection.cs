@@ -29,7 +29,8 @@ namespace ChatFPT.Service
             services.AddScoped<IQuestionService, QuestionService>();
             services.AddScoped<IFeedBackService, FeedbackService>();
             services.AddScoped<ITagService, TagService>();
-            
+            services.AddScoped<IAnswerService, AnswerService>();
+            services.AddScoped<IRoleClaimService, RoleClaimService>();
         }
         private static void AddAutoMapper(this IServiceCollection services)
         {

@@ -14,6 +14,15 @@ namespace ChatFPT.API.Controllers
         {
             _authService = authService;
         }
+
+        [HttpGet]
+        [Route("GetUserInfo")]
+        public async Task<IActionResult> GetUserInfo()
+        {
+            UserInfoModel model =  await _authService.GetUserInfo();
+            return Ok(BaseResponse<string>.OkDataResponse(model, "Lấy thông tin người dùng thành công"));
+        }
+                
         [HttpPost("LoginGoogle")]
         public async Task<IActionResult> LoginGoogle(string token)
         {
