@@ -26,8 +26,8 @@ namespace ChatFPT.API.Controllers
         [HttpPost("LoginGoogle")]
         public async Task<IActionResult> LoginGoogle(string token)
         {
-            await _authService.LoginGoogle(token);
-            return Ok(BaseResponse<string>.OkDataResponse("OK"));
+            TokenResponse tokenResponse = await _authService.LoginGoogle(token);
+            return Ok(BaseResponse<string>.OkDataResponse(tokenResponse,"OK"));
         }
 
         [HttpPost("Login")]

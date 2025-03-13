@@ -2,11 +2,14 @@
 using ChatFPT.Application.Repositories.ChatFPT.Infrastructure.Repositories;
 using ChatFPT.Domain.Base;
 using ChatFPT.Insfracstructure.Base;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 using System.Reflection;
 using System.Text;
 
@@ -24,6 +27,7 @@ namespace ChatFPT.API.DI
             services.AddUnitOfWork();
             services.JwtSettingsConfig(configuration);
             services.AddAuthenJwt();
+            services.AddFirebaseAuth(configuration);
         }
         public static void JwtSettingsConfig(this IServiceCollection services, IConfiguration configuration)
         {
@@ -169,6 +173,22 @@ namespace ChatFPT.API.DI
                 e.SaveToken = true;
                 e.RequireHttpsMetadata = true;
             });
+        }
+
+        public static void AddFirebaseAuth(this IServiceCollection services, IConfiguration configuration)
+        {
+            var firebaseConfig = configuration.GetSection("FireBase").Get<Dictionary<string, string>>();
+
+            if (firebaseConfig != null)
+            {
+                var credential = GoogleCredential.FromJson(JsonConvert.SerializeObject(firebaseConfig));
+
+                FirebaseApp.Create(new AppOptions
+                {
+                    Credential = credential
+                });
+            }
+           
         }
     }
 }

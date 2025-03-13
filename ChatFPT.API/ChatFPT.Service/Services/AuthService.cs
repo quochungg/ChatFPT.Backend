@@ -9,6 +9,7 @@ using ChatFPT.Domain.Base;
 using ChatFPT.Domain.Entities;
 using ChatFPT.Service.Insfracstructure;
 using ChatFPT.Service.Interfaces;
+using FirebaseAdmin.Auth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -115,12 +116,72 @@ namespace ChatFPT.Service.Services
 
         
 
-        public async Task LoginGoogle(string token)
+        public async Task<TokenResponse> LoginGoogle(string token)
         {
+            TokenResponse response;
+            // 1. Xác thực token với Firebase
+            FirebaseToken decodedToken;
+            try
+            {
+                decodedToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(token);
+            }
+            catch
+            {
+                throw new ErrorException(StatusCodes.Status401Unauthorized, ResponseCodeConstaints.UNAUTHORIZED, "Token Google không hợp lệ.");
+            }
+
+            string userId = decodedToken.Uid;
+            UserRecord userRecord = await FirebaseAuth.DefaultInstance.GetUserAsync(userId);
+
+          
+
+            ApplicationUser? checkUser = await _unitOfWork.GetRepository<ApplicationUser>().Entities
+                 .FirstOrDefaultAsync(u => u.GoogleId == userId && !u.DeletedTime.HasValue);
+            
+            
+            if (checkUser == null)
+            {
+                ApplicationUser applicationUser = new ApplicationUser()
+                {
+                    GoogleId = userId,
+                    isGoogle = true,
+                    Email = userRecord.Email,
+                    CreatedTime = DateTime.Now,
+                    FullName = userRecord.DisplayName,
+                    EmailConfirmed = true,
+                    NormalizedEmail = userRecord.Email.ToUpper(),
+                    
+                };
+                
+                await _unitOfWork.GetRepository<ApplicationUser>().AddAsync(applicationUser);
+                await _unitOfWork.SaveAsync();
+
+                ApplicationRole? role = await _unitOfWork.GetRepository<ApplicationRole>().Entities.FirstOrDefaultAsync(r => r.Name == "User");
+                ApplicationUserRoles applicationUserRoles = new ApplicationUserRoles()
+                {
+                    UserId = applicationUser.Id,
+                    RoleId = role!.Id
+                };
+
+                await _unitOfWork.GetRepository<ApplicationUserRoles>().AddAsync(applicationUserRoles);
+                await _unitOfWork.SaveAsync();
+
+                response = await Authentication.CreateToken(applicationUser, role.Name!, _jwtSettings, false);
+                return response;
+                
+            }
+            ApplicationUserRoles? checkUserRole = await _unitOfWork.GetRepository<ApplicationUserRoles>().Entities.
+                FirstOrDefaultAsync(ur => ur.UserId == checkUser!.Id && !ur.DeletedTime.HasValue);
+            ApplicationRole? checkRole = await _unitOfWork.GetRepository<ApplicationRole>().Entities.
+                FirstOrDefaultAsync(r => r.Id == checkUserRole!.RoleId && !r.DeletedTime.HasValue);
+
+            response = await Authentication.CreateToken(checkUser, checkRole!.Name!, _jwtSettings, false);
+
+            return response;
             
         }
 
-        public async Task Register(RegisterRequestModel model)
+    public async Task Register(RegisterRequestModel model)
         {
             model.CheckValid();
             if( await _unitOfWork.GetRepository<ApplicationUser>().Entities.FirstOrDefaultAsync(u => u.UserName == model.UserName && !u.DeletedTime.HasValue) != null)

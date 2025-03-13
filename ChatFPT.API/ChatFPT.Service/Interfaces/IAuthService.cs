@@ -5,7 +5,7 @@ namespace ChatFPT.Service.Interfaces
     public interface IAuthService
     {
         
-        Task LoginGoogle(string token);
+        Task<TokenResponse> LoginGoogle(string token);
 
         Task<LoginResponse> Login(LoginRequestModel model);
 
