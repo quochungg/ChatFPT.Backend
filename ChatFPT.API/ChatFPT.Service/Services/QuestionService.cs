@@ -29,7 +29,7 @@ namespace ChatFPT.Service.Services
             Tag tag = await _unitOfWork.GetRepository<Tag>().Entities.FirstOrDefaultAsync(t => t.Id == model.TagId && !t.DeleteTime.HasValue)
                 ?? throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "Tag không tồn tại");
             Question question = _mapper.Map<Question>(model);
-            question.UserId = Guid.Parse(Authentication.GetUserIdFromHttpContextAccessor(_contextAccessor));
+            
             question.CreatedTime = DateTime.Now;
             question.CreatedBy = Authentication.GetUserIdFromHttpContextAccessor(_contextAccessor);
             await _unitOfWork.GetRepository<Question>().AddAsync(question);
@@ -64,7 +64,7 @@ namespace ChatFPT.Service.Services
                                                       where !question.DeleteTime.HasValue
                                                       select new ResponseQuestionModel()
                                                       {
-                                                          UserId = question.UserId.ToString(),
+                                                          Id = question.Id,
                                                           Content = question.Content,
                                                           TagName = tag.Name,
                                                           IsResolve = question.IsResolve,

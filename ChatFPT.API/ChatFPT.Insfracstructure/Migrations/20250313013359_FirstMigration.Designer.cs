@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChatFPT.Insfracstructure.Migrations
 {
     [DbContext(typeof(ChatBoxDBContext))]
-    [Migration("20250312074202_FirstMigration")]
+    [Migration("20250313013359_FirstMigration")]
     partial class FirstMigration
     {
         /// <inheritdoc />
@@ -293,23 +293,41 @@ namespace ChatFPT.Insfracstructure.Migrations
                     b.Property<DateTimeOffset?>("LastUpdateTime")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Questions");
                 });
 
             modelBuilder.Entity("ChatFPT.Domain.Entities.QuestionTag", b =>
                 {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("CreatedTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DeleteBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("DeleteTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("LastUpdateBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("LastUpdateTime")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<string>("QuestionId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("TagId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("QuestionId");
 
@@ -475,7 +493,7 @@ namespace ChatFPT.Insfracstructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("ChatFPT.Domain.Entities.ApplicationRoleClailms", b =>
+            modelBuilder.Entity("ChatFPT.Domain.Entities.ApplicationRoleClaims", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>");
 
@@ -488,7 +506,7 @@ namespace ChatFPT.Insfracstructure.Migrations
                     b.Property<DateTimeOffset?>("LastUpdatedTime")
                         .HasColumnType("datetimeoffset");
 
-                    b.HasDiscriminator().HasValue("ApplicationRoleClailms");
+                    b.HasDiscriminator().HasValue("ApplicationRoleClaims");
                 });
 
             modelBuilder.Entity("ChatFPT.Domain.Entities.ApplicationUserRoles", b =>
@@ -523,15 +541,6 @@ namespace ChatFPT.Insfracstructure.Migrations
                         .HasForeignKey("AnswerId");
 
                     b.Navigation("Answer");
-                });
-
-            modelBuilder.Entity("ChatFPT.Domain.Entities.Question", b =>
-                {
-                    b.HasOne("ChatFPT.Domain.Entities.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ChatFPT.Domain.Entities.QuestionTag", b =>

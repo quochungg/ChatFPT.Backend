@@ -82,6 +82,25 @@ namespace ChatFPT.Insfracstructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Questions",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsResolve = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastUpdateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LastUpdateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DeleteTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    DeleteBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Questions", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -196,31 +215,6 @@ namespace ChatFPT.Insfracstructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Questions",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsResolve = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastUpdateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    LastUpdateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DeleteTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    DeleteBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Questions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Questions_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Tags",
                 columns: table => new
                 {
@@ -272,11 +266,19 @@ namespace ChatFPT.Insfracstructure.Migrations
                 name: "QuestionTags",
                 columns: table => new
                 {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     QuestionId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    TagId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    TagId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CreatedTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastUpdateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LastUpdateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DeleteTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    DeleteBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
+                    table.PrimaryKey("PK_QuestionTags", x => x.Id);
                     table.ForeignKey(
                         name: "FK_QuestionTags_Questions_QuestionId",
                         column: x => x.QuestionId,
@@ -364,11 +366,6 @@ namespace ChatFPT.Insfracstructure.Migrations
                 column: "AnswerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Questions_UserId",
-                table: "Questions",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_QuestionTags_QuestionId",
                 table: "QuestionTags",
                 column: "QuestionId");
@@ -412,6 +409,9 @@ namespace ChatFPT.Insfracstructure.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
+                name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
                 name: "Answers");
 
             migrationBuilder.DropTable(
@@ -422,9 +422,6 @@ namespace ChatFPT.Insfracstructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Categories");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUsers");
         }
     }
 }

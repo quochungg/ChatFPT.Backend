@@ -6,6 +6,7 @@ using ChatFPT.Core.Models.Category;
 using ChatFPT.Core.Models.Feedback;
 using ChatFPT.Core.Models.Question;
 using ChatFPT.Core.Models.Role;
+using ChatFPT.Core.Models.Tag;
 using ChatFPT.Core.Models.User;
 using ChatFPT.Domain.Entities;
 
@@ -40,6 +41,11 @@ namespace ChatFPT.Service.Insfracstructure
             CreateMap<ApplicationRoleClaims,CreateRoleClaim>().ReverseMap();
             CreateMap<ApplicationRoleClaims,UpdateRoleClaim>().ReverseMap();
             CreateMap<ApplicationRoleClaims,ResponseRoleClaimModel>().ReverseMap();
+
+            CreateMap<Tag, CreateTagModel>().ReverseMap();
+            CreateMap<Tag, UpdateTagModel>().ReverseMap();
+            CreateMap<Tag, ResponseTagModel>().ReverseMap();
+            
         }
     }
 }

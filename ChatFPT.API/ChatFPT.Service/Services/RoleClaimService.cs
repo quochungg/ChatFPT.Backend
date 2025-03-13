@@ -27,7 +27,7 @@ namespace ChatFPT.Service.Services
         }
         public async Task CreateRoleClaim(CreateRoleClaim model)
         {
-           if (await _unitOfWork.GetRepository<ApplicationRoleClaims>().Entities.FirstOrDefaultAsync(r => r.Id.ToString() == model.RoleId && !r.DeletedTime.HasValue) == null)
+           if (await _unitOfWork.GetRepository<ApplicationRole>().Entities.FirstOrDefaultAsync(r => r.Id.ToString() == model.RoleId && !r.DeletedTime.HasValue) == null)
             {
                 throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "RoleId khong ton tai");
             }

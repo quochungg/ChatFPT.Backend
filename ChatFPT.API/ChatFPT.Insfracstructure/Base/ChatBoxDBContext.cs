@@ -27,11 +27,10 @@ namespace ChatFPT.Insfracstructure.Base
         public virtual DbSet<QuestionTag> QuestionTags { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
-
-            // Đánh dấu QuestionTag là keyless entity
             modelBuilder.Entity<QuestionTag>()
-                .HasNoKey();
+                .HasKey(qt => qt.Id); // Xác định Primary Key
+
+            base.OnModelCreating(modelBuilder);
         }
     }
 

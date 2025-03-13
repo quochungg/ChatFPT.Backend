@@ -1,8 +1,11 @@
 ﻿
 
+using ChatFPT.Domain.Base;
+using System.ComponentModel.DataAnnotations;
+
 namespace ChatFPT.Domain.Entities
 {
-    public class QuestionTag
+    public class QuestionTag : AuditableEntity
     {
         public string? QuestionId { get; set; }
         public virtual Question? Question { get; set; }
