@@ -15,11 +15,6 @@ builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddHttpClient();
 builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
-builder.Configuration
-    .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
-    .AddEnvironmentVariables();
 
 // Configure the HTTP request pipeline.
 

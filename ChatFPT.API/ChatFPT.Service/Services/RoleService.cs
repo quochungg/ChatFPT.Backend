@@ -27,7 +27,7 @@ namespace ChatFPT.Service.Services
             ApplicationRole role = _mapper.Map<ApplicationRole>(model);
             role.NormalizedName = model.Name!.ToUpper();
             await _unitOfWork.GetRepository<ApplicationRole>().AddAsync(role);
-            await _unitOfWork.SaveAsync();          
+            await _unitOfWork.SaveAsync();
         }
 
         public async Task DeleteRole(Guid roleId)
@@ -52,7 +52,7 @@ namespace ChatFPT.Service.Services
                                                       CreatedTime = role.CreatedTime
                                                   };
 
-            if(!string.IsNullOrWhiteSpace(searchName))
+            if (!string.IsNullOrWhiteSpace(searchName))
             {
                 query = query.Where(s => s.Name!.Contains(searchName));
             }
@@ -62,17 +62,29 @@ namespace ChatFPT.Service.Services
 
         }
 
+        public async Task<ResponseRoleModel> GetRoleById(Guid roleId)
+        {
+            ApplicationUserRoles role = await _unitOfWork.GetRepository<ApplicationUserRoles>().GetByIdAsync(roleId) ?? throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstaints.NOT_FOUND, "Không tìm thấy Role");
+
+            if (role.DeletedTime.HasValue)
+            {
+                throw new ErrorException(StatusCodes.Status410Gone, ResponseCodeConstaints.GONE,
+                    $"Role đã bị xóa. Deleted time:{role.DeletedTime}");
+            }
+            return _mapper.Map<ResponseRoleModel>(role);
+        }
+
         public async Task UpdateRole(UpdateRoleModel model)
         {
-                model.ValidateFields();
-                ApplicationRole role = await _unitOfWork.GetRepository<ApplicationRole>().Entities.FirstOrDefaultAsync(r => r.Id == model.Id && !r.DeletedTime.HasValue)
-                    ?? throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "Không tìm thấy RoleId");
+            model.ValidateFields();
+            ApplicationRole role = await _unitOfWork.GetRepository<ApplicationRole>().Entities.FirstOrDefaultAsync(r => r.Id == model.Id && !r.DeletedTime.HasValue)
+                ?? throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "Không tìm thấy RoleId");
 
-                _mapper.Map(model, role);
-                role.LastUpdatedTime = DateTime.UtcNow;
-                role.NormalizedName = model.Name!.ToUpper();
-                await _unitOfWork.GetRepository<ApplicationRole>().UpdateAsync(role);
-                await _unitOfWork.SaveAsync();
+            _mapper.Map(model, role);
+            role.LastUpdatedTime = DateTime.UtcNow;
+            role.NormalizedName = model.Name!.ToUpper();
+            await _unitOfWork.GetRepository<ApplicationRole>().UpdateAsync(role);
+            await _unitOfWork.SaveAsync();
         }
     }
 }

@@ -8,10 +8,10 @@ namespace ChatFPT.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class FeedbackController : ControllerBase
+    public class FeedbacksController : ControllerBase
     {
         private readonly IFeedBackService _feedbackService;
-        public FeedbackController(IFeedBackService feedbackService)
+        public FeedbacksController(IFeedBackService feedbackService)
         {
             _feedbackService = feedbackService;
         }
@@ -29,10 +29,10 @@ namespace ChatFPT.API.Controllers
             return Ok(BaseResponseModel<string>.OkMessageResponseModel("Cập nhập Feedback thành công"));
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> DeleteFeedback(string Id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteFeedback(string id)
         {
-            await _feedbackService.DeleteFeedbackAsync(Id);
+            await _feedbackService.DeleteFeedbackAsync(id);
             return Ok(BaseResponseModel<string>.OkMessageResponseModel("Xóa Category thành công"));
         }
 
@@ -44,7 +44,7 @@ namespace ChatFPT.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetCategoryById(string id)
+        public async Task<IActionResult> GetFeedbackById(string id)
         {
             var data = await _feedbackService.GetFeedbackId(id);
             return Ok(BaseResponseModel<ResponseFeedbackModel>.OkDataResponse(data, "Lấy data thành công"));

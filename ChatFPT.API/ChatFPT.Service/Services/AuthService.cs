@@ -184,12 +184,13 @@ namespace ChatFPT.Service.Services
     public async Task Register(RegisterRequestModel model)
         {
             model.CheckValid();
+
             if( await _unitOfWork.GetRepository<ApplicationUser>().Entities.FirstOrDefaultAsync(u => u.UserName == model.UserName && !u.DeletedTime.HasValue) != null)
             {
-                 throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "UserName bị trùng");
+                 throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "Username đã tồn tại");
             }
                
-            var passwordHash = _passwordHasher.Hash(model.PasswordHash);
+            var passwordHash = _passwordHasher.Hash(model.Password);
             
             ApplicationUser user = _mapper.Map<ApplicationUser>(model);
             user.Password = passwordHash;

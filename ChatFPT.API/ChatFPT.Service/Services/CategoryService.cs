@@ -76,15 +76,18 @@ namespace ChatFPT.Service.Services
 
         public async Task<ResponseCategoryModel> GetCategoryId(string id)
         {
-            Category cate = await _unitOfWork.GetRepository<Category>().Entities.FirstOrDefaultAsync(r => r.Id == id && !r.DeleteTime.HasValue)
-                ?? throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "Không tìm thấy CategoryId");
-            return new ResponseCategoryModel
+            Category cate = await _unitOfWork.GetRepository<Category>().Entities.FirstOrDefaultAsync(r => r.Id == id)
+                ?? throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstaints.NOT_FOUND, "Không tìm thấy CategoryId");
+
+            if (cate.DeleteTime.HasValue)
             {
-                CategoryId = cate.Id,
-                CategoryName = cate.CategoryName,
-                Description = cate.Description,
-                CreatedTime = cate.CreatedTime,
-            };
+                throw new ErrorException(StatusCodes.Status410Gone, ResponseCodeConstaints.GONE,
+                     $"Answers đã bị xóa. Deleted by: {cate.DeleteBy}. Deleted date: {cate.DeleteTime}"
+                );
+            }
+            
+            return _mapper.Map<ResponseCategoryModel>(cate);
+
         }
 
         public async Task UpdateCategoryAsync(UpdateCategoryModel model)

@@ -14,5 +14,6 @@ namespace ChatFPT.Core.Constaints
         public const string UNAUTHORIZED = "Unauthorized!";
         public const string FORBIDDEN = "Forbidden!";
         public const string BADREQUEST = "Bad request!";
+        public const string GONE = "Gone!";
     }
 }

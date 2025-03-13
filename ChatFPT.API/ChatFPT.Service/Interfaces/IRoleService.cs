@@ -12,5 +12,7 @@ namespace ChatFPT.Service.Interfaces
         Task UpdateRole(UpdateRoleModel model);
 
         Task DeleteRole(Guid roleId);
+
+        Task <ResponseRoleModel> GetRoleById(Guid roleId);
     }
 }

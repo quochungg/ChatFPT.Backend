@@ -62,13 +62,26 @@ namespace ChatFPT.Service.Services
 
                                                     };
 
-            if(!string.IsNullOrWhiteSpace(searchName))
+            if (!string.IsNullOrWhiteSpace(searchName))
             {
                 query = query.Where(q => q.Content!.Contains(searchName));
             }
 
             PaginatedList<ResponseAnswerModel> paginatedAnswer = await _unitOfWork.GetRepository<ResponseAnswerModel>().GetPagingAsync(query, index, pageSize);
             return paginatedAnswer;
+        }
+
+        public async Task<ResponseAnswerModel> GetAnswerById(string id)
+        {
+            Answer answer = await _unitOfWork.GetRepository<Answer>().GetByIdAsync(id) ?? throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstaints.NOT_FOUND, "Không tìm AnswerId");
+
+            if(answer.DeleteTime != null)
+            {
+                throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.GONE, 
+                    $"Answers đã bị xóa. Deleted by: {answer.DeleteBy}. Deleted date: {answer.DeleteTime}"
+                );
+            }
+            return _mapper.Map<ResponseAnswerModel>(answer);
         }
 
         public async Task UpdateAnswer(UpdateAnswerModel model)

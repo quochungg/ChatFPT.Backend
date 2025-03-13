@@ -16,28 +16,28 @@ namespace ChatFPT.API.Controllers
         }
 
         [HttpGet]
-        [Route("GetUserInfo")]
+        [Route("me")]
         public async Task<IActionResult> GetUserInfo()
         {
             UserInfoModel model =  await _authService.GetUserInfo();
             return Ok(BaseResponse<string>.OkDataResponse(model, "Lấy thông tin người dùng thành công"));
         }
                 
-        [HttpPost("LoginGoogle")]
+        [HttpPost("google")]
         public async Task<IActionResult> LoginGoogle(string token)
         {
             TokenResponse tokenResponse = await _authService.LoginGoogle(token);
             return Ok(BaseResponse<string>.OkDataResponse(tokenResponse,"OK"));
         }
 
-        [HttpPost("Login")]
+        [HttpPost]
         public async Task<IActionResult> Login(LoginRequestModel model)
         {
             LoginResponse response = await _authService.Login(model);
             return Ok(BaseResponse<string>.OkDataResponse(response,"Đăng nhập thành công"));
         }
 
-        [HttpPost("RefreshToken")]
+        [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken(RefreshTokenRequestModel model)
         {
             TokenResponse response = await _authService.RefreshToken(model);
@@ -45,17 +45,17 @@ namespace ChatFPT.API.Controllers
         }
 
 
-        [HttpPost("Register")]
+        [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterRequestModel model)
         {
             await _authService.Register(model);
             return Ok(BaseResponse<string>.OkMessageResponseModel("Tạo mới tài khoản thành công"));
         }
 
-        [HttpDelete("Delete")]
-        public async Task<IActionResult> DeleteUser(string userId)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUser(string id)
         {
-            await _authService.Delete(userId);
+            await _authService.Delete(id);
             return Ok(BaseResponse<string>.OkMessageResponseModel("Xóa tài khoản thành công"));
         }
     }

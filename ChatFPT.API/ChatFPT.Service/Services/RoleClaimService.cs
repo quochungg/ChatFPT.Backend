@@ -19,7 +19,7 @@ namespace ChatFPT.Service.Services
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public RoleClaimService(IHttpContextAccessor httpContextAccessor , IMapper mapper , IUnitOfWork unitOfWork)
+        public RoleClaimService(IHttpContextAccessor httpContextAccessor, IMapper mapper, IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -27,12 +27,12 @@ namespace ChatFPT.Service.Services
         }
         public async Task CreateRoleClaim(CreateRoleClaim model)
         {
-           if (await _unitOfWork.GetRepository<ApplicationRole>().Entities.FirstOrDefaultAsync(r => r.Id.ToString() == model.RoleId && !r.DeletedTime.HasValue) == null)
+            if (await _unitOfWork.GetRepository<ApplicationRole>().Entities.FirstOrDefaultAsync(r => r.Id.ToString() == model.RoleId && !r.DeletedTime.HasValue) == null)
             {
-                throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "RoleId khong ton tai");
+                throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "RoleId không tồn tại");
             }
 
-           ApplicationRoleClaims applicationRoleClaims = _mapper.Map<ApplicationRoleClaims>(model);
+            ApplicationRoleClaims applicationRoleClaims = _mapper.Map<ApplicationRoleClaims>(model);
 
             applicationRoleClaims.CreatedTime = DateTime.Now;
 
@@ -74,15 +74,37 @@ namespace ChatFPT.Service.Services
             return paginatedRoleClaims;
         }
 
+        public async Task<ResponseRoleClaimModel> GetRoleClaimsById(string id)
+        {
+            ApplicationRoleClaims roleClaims = await _unitOfWork.GetRepository<ApplicationRoleClaims>().GetByIdAsync(id)
+                ?? throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstaints.NOT_FOUND, "Không tìm thấy RoleClaimId");
+
+            //Check role is deleted or not
+            ApplicationRole role = await _unitOfWork.GetRepository<ApplicationRole>().GetByIdAsync(roleClaims.RoleId)
+                ?? throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstaints.NOT_FOUND, "Không tìm thấy RoleId");
+
+            if (role.DeletedTime.HasValue)
+            {
+                throw new ErrorException(StatusCodes.Status410Gone, ResponseCodeConstaints.GONE, "Role đã bị xóa");
+            }
+
+            else if (roleClaims.DeletedTime.HasValue) { 
+                throw new ErrorException(StatusCodes.Status410Gone, ResponseCodeConstaints.GONE,
+                    $"RoleClaim đã bị xóa. Deleted time:{roleClaims.DeletedTime}");
+            }
+
+            return _mapper.Map<ResponseRoleClaimModel>(roleClaims);
+        }
+
         public async Task UpdateRoleClaim(UpdateRoleClaim model)
         {
             ApplicationRoleClaims applicationRoleClaims = await _unitOfWork.GetRepository<ApplicationRoleClaims>().Entities
                 .FirstOrDefaultAsync(r => r.Id.ToString().Equals(model.RoleClaimId) && !r.DeletedTime.HasValue)
-                ?? throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "KHông tìm thấy roleclaims");
+                ?? throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "Không tìm thấy roleclaims");
 
             if (await _unitOfWork.GetRepository<ApplicationRoleClaims>().Entities.FirstOrDefaultAsync(r => r.Id.ToString() == model.RoleId && !r.DeletedTime.HasValue) == null)
             {
-                throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "RoleId khong ton tai");
+                throw new ErrorException(StatusCodes.Status410Gone, ResponseCodeConstaints.GONE, "RoleId khong ton tai");
             }
 
             _mapper.Map(model, applicationRoleClaims);

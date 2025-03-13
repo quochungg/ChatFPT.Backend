@@ -1,19 +1,25 @@
-﻿using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
-
 
 namespace ChatFPT.Insfracstructure.Base
 {
     public class ChatBoxDBContextFactory : IDesignTimeDbContextFactory<ChatBoxDBContext>
     {
-       
         public ChatBoxDBContext CreateDbContext(string[] args)
         {
-            var builder = new DbContextOptionsBuilder<ChatBoxDBContext>();
+            string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
 
-            //builder.UseSqlServer("Server=tcp:chatfpt.database.windows.net,1433;Initial Catalog=ChatBoxFPT;Persist Security Info=False;User ID=chatfpt;Password=Admin@123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
-            builder.UseSqlServer("Server=.;Database=ChatBoxFPT;uid=sa;pwd=12345;Trusted_Connection=True;TrustServerCertificate=true;MultipleActiveResultSets=true;");
+            IConfigurationRoot configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true) 
+                .Build();
+
+            string connectionString = configuration.GetConnectionString("DefaultSQLConnection");
+
+            var builder = new DbContextOptionsBuilder<ChatBoxDBContext>();
+            builder.UseSqlServer(connectionString);
 
             return new ChatBoxDBContext(builder.Options);
         }
