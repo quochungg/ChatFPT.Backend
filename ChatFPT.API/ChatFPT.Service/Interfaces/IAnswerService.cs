@@ -5,7 +5,7 @@ namespace ChatFPT.Service.Interfaces
 {
     public interface IAnswerService
     {
-        Task<PaginatedList<ResponseAnswerModel>> GetAllAnswers(string? searchName, int index = 1, int pageSize = 10);
+        Task<PaginatedList<ResponseAnswerModel>> GetAllAnswers(string? searchName, int index, int pageSize, string orderBy, string sortBy);
 
         Task CreateAnswer(CreateAnswerModel model);
 

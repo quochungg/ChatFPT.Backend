@@ -7,7 +7,7 @@ namespace ChatFPT.Service.Interfaces
 {
     public interface IQuestionService
     {
-        Task<PaginatedList<ResponseQuestionModel>> GetAllQuestion(string? searchName, int index = 1, int PageSize = 10);
+        Task<PaginatedList<ResponseQuestionModel>> GetAllQuestion(string? searchName, int index , int PageSize ,string orderBy, string sortBy);
 
         Task<ResponseQuestionModel> GetQuestionById(string id);
 

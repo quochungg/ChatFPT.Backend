@@ -11,6 +11,8 @@ using ChatFPT.Service.Insfracstructure;
 using ChatFPT.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Dynamic.Core.Exceptions;
+using System.Linq.Dynamic.Core;
 
 namespace ChatFPT.Service.Services
 {
@@ -45,7 +47,7 @@ namespace ChatFPT.Service.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task<PaginatedList<ResponseFeedbackModel>> GetFeedbacksAsync(string? searchName, int index, int PageSize)
+        public async Task<PaginatedList<ResponseFeedbackModel>> GetFeedbacksAsync(string? searchName, int index, int PageSize, string orderBy, string sortBy)
         {
             IQueryable<ResponseFeedbackModel> query = from feedback in _unitOfWork.GetRepository<Feedback>().Entities
                                                       join answer in _unitOfWork.GetRepository<Answer>().Entities on feedback.AnswerId equals answer.Id
@@ -65,6 +67,19 @@ namespace ChatFPT.Service.Services
             if (!string.IsNullOrWhiteSpace(searchName))
             {
                 query = query.Where(s => s.Note!.Contains(searchName));
+            }
+
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                string sortDirection = (sortBy?.ToLower() == "desc") ? "descending" : "ascending";
+                try
+                {
+                    query = query.OrderBy($"{orderBy} {sortDirection}");
+                }
+                catch (ParseException)
+                {
+                    query = query.OrderBy("QuestionId");
+                }
             }
 
             PaginatedList<ResponseFeedbackModel> paginatedFeedback = await _unitOfWork.GetRepository<ResponseFeedbackModel>().GetPagingAsync(query, index, PageSize);

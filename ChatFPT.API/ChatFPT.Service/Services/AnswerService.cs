@@ -10,6 +10,9 @@ using ChatFPT.Service.Insfracstructure;
 using ChatFPT.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing.Printing;
+using System.Linq.Dynamic.Core;
+using System.Linq.Dynamic.Core.Exceptions;
 
 namespace ChatFPT.Service.Services
 {
@@ -18,14 +21,12 @@ namespace ChatFPT.Service.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
-        private readonly ChatHub _chatHub;
 
-        public AnswerService(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor, IMapper mapper, ChatHub chatHub)
+        public AnswerService(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
-            _chatHub = chatHub;
         }
 
         public async Task CreateAnswer(CreateAnswerModel model)
@@ -51,7 +52,7 @@ namespace ChatFPT.Service.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task<PaginatedList<ResponseAnswerModel>> GetAllAnswers(string? searchName, int index = 1, int pageSize = 10)
+        public async Task<PaginatedList<ResponseAnswerModel>> GetAllAnswers(string? searchName, int index , int pageSize, string orderBy, string sortBy)
         {
             IQueryable<ResponseAnswerModel> query = from a in _unitOfWork.GetRepository<Answer>().Entities
                                                     where !a.DeleteTime.HasValue
@@ -66,6 +67,19 @@ namespace ChatFPT.Service.Services
             if (!string.IsNullOrWhiteSpace(searchName))
             {
                 query = query.Where(q => q.Content!.Contains(searchName));
+            }
+
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                string sortDirection = (sortBy?.ToLower() == "desc") ? "descending" : "ascending";
+                try
+                {
+                    query = query.OrderBy($"{orderBy} {sortDirection}");
+                }
+                catch (ParseException)
+                {
+                    query = query.OrderBy("Id");
+                }
             }
 
             PaginatedList<ResponseAnswerModel> paginatedAnswer = await _unitOfWork.GetRepository<ResponseAnswerModel>().GetPagingAsync(query, index, pageSize);

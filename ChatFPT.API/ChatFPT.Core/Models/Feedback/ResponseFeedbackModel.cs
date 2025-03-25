@@ -9,6 +9,7 @@ namespace ChatFPT.Core.Models.Feedback
     public class ResponseFeedbackModel
     {
         public string? AnswerId { get; set; }
+
         public string? QuestionId { get; set; }
         
         public string? AnswerContent { get; set; }
@@ -16,7 +17,9 @@ namespace ChatFPT.Core.Models.Feedback
         public string? QuestionContent { get; set; }
 
         public string? Note {  get; set; }
+
         public int? Rate { get; set; }
+
         public DateTimeOffset? CreatedTime { get; set; }
 
     }

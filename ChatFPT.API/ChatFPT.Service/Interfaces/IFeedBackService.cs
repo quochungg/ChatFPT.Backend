@@ -6,7 +6,7 @@ namespace ChatFPT.Service.Interfaces
 {
     public interface IFeedBackService
     {
-        Task<PaginatedList<ResponseFeedbackModel>> GetFeedbacksAsync(string? searchName , int index , int PageSize);
+        Task<PaginatedList<ResponseFeedbackModel>> GetFeedbacksAsync(string? searchName , int index , int PageSize, string orderBy, string sortBy);
 
         Task<ResponseFeedbackModel> GetFeedbackId(string id);
 

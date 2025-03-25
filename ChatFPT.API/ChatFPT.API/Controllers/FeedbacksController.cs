@@ -37,9 +37,9 @@ namespace ChatFPT.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetFeedback(string? searchName, int index = 1, int pageSize = 10)
+        public async Task<IActionResult> GetFeedback(string? searchName, int index = 1, int pageSize = 10, string orderBy = "QuestionId", string sortBy = "DESC")
         {
-            var data = await _feedbackService.GetFeedbacksAsync(searchName, index, pageSize);
+            var data = await _feedbackService.GetFeedbacksAsync(searchName, index, pageSize, orderBy, sortBy);
             return Ok(BaseResponseModel<IReadOnlyCollection<ResponseFeedbackModel>>.OkDataResponse(data, "Lấy data thành công"));
         }
 
