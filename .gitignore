@@ -147,3 +147,6 @@ _NCrunch*
 /ChatFPT.API/ChatFPT.API/appsettings.Development.json
 /ChatFPT.API/ChatFPT.API/appsettings.Production.json
 /ChatFPT.API/.vs/ChatFPT.API
+/ChatFPT.API/ChatFPT.API/.config
+/ChatFPT.API/ChatFPT.API/Properties/ServiceDependencies/ChatBoxFPT - Web Deploy
+/ChatFPT.API/ChatFPT.API/Properties/ServiceDependencies/ChatBoxFPT - Web Deploy1
