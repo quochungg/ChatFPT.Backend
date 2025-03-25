@@ -66,6 +66,7 @@ namespace ChatFPT.Service.Services
                                                       {
                                                           Id = question.Id,
                                                           Content = question.Content,
+                                                          TagId = questionTag.TagId,
                                                           TagName = tag.Name,
                                                           IsResolve = question.IsResolve,
                                                       };

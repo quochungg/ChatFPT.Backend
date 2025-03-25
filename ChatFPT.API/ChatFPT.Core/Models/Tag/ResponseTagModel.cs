@@ -10,6 +10,7 @@ namespace ChatFPT.Core.Models.Tag
 
         public string? CategoryId { get; set; }
 
+        public string? CategoryName { get; set; }
         public DateTimeOffset? CreatedTime { get; set; }
     }
 }
