@@ -6,6 +6,7 @@ using ChatFPT.Core.Models.Answer;
 using ChatFPT.Core.Models.Category;
 using ChatFPT.Core.Pagination;
 using ChatFPT.Domain.Entities;
+using ChatFPT.Service.Hubs;
 using ChatFPT.Service.Insfracstructure;
 using ChatFPT.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -19,12 +20,14 @@ namespace ChatFPT.Service.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
+        private readonly ChatHub _chatHub;
 
-        public AnswerService(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor, IMapper mapper)
+        public AnswerService(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor, IMapper mapper, ChatHub chatHub)
         {
             _unitOfWork = unitOfWork;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
+            _chatHub = chatHub;
         }
 
         public async Task CreateAnswer(CreateAnswerModel model)
