@@ -6,6 +6,7 @@ namespace ChatFPT.Core.Models.Answer
     {
         public string? Id { get; set; }
         public string? QuestionId { get; set; }
+        public string ? QuestionContent { get; set; }
         public string? Content { get; set; }
     }
 }

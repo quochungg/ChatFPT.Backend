@@ -9,6 +9,7 @@ namespace ChatFPT.Core.Models.Feedback
     public class ResponseFeedbackModel
     {
         public string? AnswerId { get; set; }
+        public string? QuestionId { get; set; }
         
         public string? AnswerContent { get; set; }
 

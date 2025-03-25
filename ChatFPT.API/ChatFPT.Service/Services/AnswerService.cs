@@ -3,14 +3,12 @@ using ChatFPT.Application.Interface;
 using ChatFPT.Core.Constaints;
 using ChatFPT.Core.ExceptionCustom;
 using ChatFPT.Core.Models.Answer;
-using ChatFPT.Core.Models.Category;
 using ChatFPT.Core.Pagination;
 using ChatFPT.Domain.Entities;
 using ChatFPT.Service.Insfracstructure;
 using ChatFPT.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using System.Drawing.Printing;
 
 namespace ChatFPT.Service.Services
 {
@@ -98,6 +96,22 @@ namespace ChatFPT.Service.Services
 
             await _unitOfWork.GetRepository<Answer>().UpdateAsync(answer);
             await _unitOfWork.SaveAsync();
+        }
+
+        public async Task<ResponseAnswerModel> GetAnswerByQuestionId(string QuestionId)
+        {
+            Question check = await _unitOfWork.GetRepository<Question>().Entities.FirstOrDefaultAsync(c => c.Id == QuestionId)
+                ?? throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstaints.NOT_FOUND, "Question Id không tồn tại");
+
+            Answer answer = await _unitOfWork.GetRepository<Answer>().Entities.FirstOrDefaultAsync(a => a.QuestionId == QuestionId)
+                ?? throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstaints.NOT_FOUND, "Answer không tồn tại");
+
+            ResponseAnswerModel answerModel = _mapper.Map<ResponseAnswerModel>(answer);
+
+            answerModel.QuestionContent = check.Content;
+            
+
+            return answerModel;
         }
     }
 }

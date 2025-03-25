@@ -28,6 +28,7 @@ namespace ChatFPT.API.DI
             services.JwtSettingsConfig(configuration);
             services.AddAuthenJwt();
             services.AddFirebaseAuth(configuration);
+            //services.ConfigRedis(configuration);
         }
         public static void JwtSettingsConfig(this IServiceCollection services, IConfiguration configuration)
         {
@@ -58,7 +59,17 @@ namespace ChatFPT.API.DI
                     });
             });
         }
-        public static void AddUnitOfWork(this IServiceCollection services)
+
+        public static void ConfigRedis(this IServiceCollection services, IConfiguration configuration) 
+            {
+            services.AddStackExchangeRedisCache(op =>
+            {
+                string cnn = configuration.GetConnectionString("Redis");
+
+                op.Configuration = cnn;
+            });             
+    }
+    public static void AddUnitOfWork(this IServiceCollection services)
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
         }

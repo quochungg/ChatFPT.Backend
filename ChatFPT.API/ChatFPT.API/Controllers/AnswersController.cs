@@ -52,5 +52,13 @@ namespace ChatFPT.API.Controllers
             var data = await _answerService.GetAnswerById(id);
             return Ok(BaseResponse<ResponseAnswerModel>.OkDataResponse(data, "Lấy data thành công"));
         }
+
+        [HttpGet("question/{id}")]
+        public async Task<IActionResult> GetAnswerByQuestionId(string? id)
+        {
+            ResponseAnswerModel model = await _answerService.GetAnswerByQuestionId(id);
+
+            return Ok(BaseResponse<ResponseAnswerModel>.OkDataResponse(model, "Lấy data thành công"));
+        }
     }
 }

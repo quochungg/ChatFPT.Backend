@@ -56,13 +56,16 @@ namespace ChatFPT.Service.Services
         public async Task<PaginatedList<ResponseTagModel>> GetAllTag(string? searchName, int index, int PageSize)
         {
             IQueryable<ResponseTagModel> query = from t in _unitOfWork.GetRepository<Tag>().Entities
+                                                 join c in _unitOfWork.GetRepository<Category>().Entities on t.CategoryId equals c.Id
                                                  where !t.DeleteTime.HasValue
                                                  select new ResponseTagModel()
                                                  {
                                                      Id = t.Id,
                                                      Name = t.Name,
                                                      CategoryId = t.CategoryId,
+                                                     CategoryName = c.CategoryName,
                                                      CreatedTime = t.CreatedTime
+                                                     
                                                  };
 
             if(!string.IsNullOrWhiteSpace(searchName))

@@ -54,6 +54,7 @@ namespace ChatFPT.Service.Services
                                                       select new ResponseFeedbackModel
                                                       {
                                                           AnswerId = feedback.AnswerId,
+                                                          QuestionId = question.Id,
                                                           Rate = feedback.Rate,
                                                           Note = feedback.Note,
                                                           CreatedTime = feedback.CreatedTime,

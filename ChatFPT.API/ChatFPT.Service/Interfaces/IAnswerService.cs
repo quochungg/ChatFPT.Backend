@@ -14,5 +14,7 @@ namespace ChatFPT.Service.Interfaces
         Task DeleteAnswer(string? answerId);
 
         Task<ResponseAnswerModel> GetAnswerById(string id);
+
+        Task<ResponseAnswerModel> GetAnswerByQuestionId(string QuestionId);
     }
 }
