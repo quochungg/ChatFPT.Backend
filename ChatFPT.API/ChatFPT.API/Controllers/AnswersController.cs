@@ -19,9 +19,9 @@ namespace ChatFPT.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllAnswer(string? searchName, int index = 1, int pageSize = 10, string orderBy = "Id", string sortBy = "DESC")
+        public async Task<IActionResult> GetAllAnswer(string? searchName, int index = 1, int pageSize = 10)
         {
-            PaginatedList<ResponseAnswerModel> list = await _answerService.GetAllAnswers(searchName, index, pageSize, orderBy, sortBy);
+            PaginatedList<ResponseAnswerModel> list = await _answerService.GetAllAnswers(searchName, index, pageSize);
             return Ok(BaseResponse<IReadOnlyCollection<ResponseAnswerModel>>.OkDataResponse(list, "Lấy danh sách thành công"));
         }
 

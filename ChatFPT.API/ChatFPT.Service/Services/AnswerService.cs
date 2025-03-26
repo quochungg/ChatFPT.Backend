@@ -10,7 +10,6 @@ using ChatFPT.Service.Insfracstructure;
 using ChatFPT.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using System.Drawing.Printing;
 using System.Linq.Dynamic.Core;
 using System.Linq.Dynamic.Core.Exceptions;
 
