@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChatFPT.Insfracstructure.Migrations
 {
     [DbContext(typeof(ChatBoxDBContext))]
-    [Migration("20250328063247_SecondMigration")]
-    partial class SecondMigration
+    [Migration("20250328115044_InitMigration")]
+    partial class InitMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

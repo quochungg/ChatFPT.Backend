@@ -35,7 +35,28 @@ namespace ChatFPT.Service.Services
             feedback.CreatedBy = Authentication.GetUserIdFromHttpContextAccessor(_contextAccessor);
             feedback.CreatedTime = DateTime.Now;
             await _unitOfWork.GetRepository<Feedback>().AddAsync(feedback);
+
             await _unitOfWork.SaveAsync();
+
+            ApplicationUser? user = await _unitOfWork.GetRepository<ApplicationUser>().Entities
+                        .Join(
+                             _unitOfWork.GetRepository<ApplicationUserRoles>().Entities,
+                            u => u.Id,
+                            ur => ur.UserId, 
+                            (u, ur) => new { User = u, UserRole = ur }
+                        )
+                        .Join(
+                            _unitOfWork.GetRepository<ApplicationRole>().Entities,
+                            combined => combined.UserRole.RoleId,
+                            r => r.Id,
+                            (combined, r) => new { combined.User, Role = r }
+                        )                       
+                        .Where(result => result.Role.Name == "Admin")
+                        .Select(result => result.User)
+                        .FirstOrDefaultAsync();
+            string title = "New FeedBack!";
+            string body = $"New Feedback was created with the content: {feedback.Note}";
+            await _fcmService.SendNotificationAsync(user.DeviceToken!, title, body);
         }
 
         public async Task DeleteFeedbackAsync(string id)

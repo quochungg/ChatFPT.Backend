@@ -9,7 +9,7 @@ namespace ChatFPT.Service.Services
 {
     public class FcmService : IFcmService
     {       
-            private static readonly string FcmUrl = "https://fcm.googleapis.com/v1/projects/kid-programming-edu/messages:send";
+            private static readonly string FcmUrl = "https://fcm.googleapis.com/v1/projects/pushnoti-64c77/messages:send";
             private FirebaseAuthHelper _firebaseAuthHelper;
             public FcmService(FirebaseAuthHelper firebaseAuthHelper)
             {
