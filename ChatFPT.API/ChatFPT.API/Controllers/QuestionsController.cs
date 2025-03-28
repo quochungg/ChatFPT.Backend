@@ -21,10 +21,11 @@ namespace ChatFPT.API.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> GetAllQuestion(string? searchName, int index = 1, int PageSize = 10, string orderBy = "Id", string sortBy = "DESC")
         [CacheAtribute(1000)]
         public async Task<IActionResult> GetAllQuestion(string? searchName, int index = 1, int PageSize = 10)
         {
-            PaginatedList<ResponseQuestionModel> paginatedList = await _questionService.GetAllQuestion(searchName, index, PageSize);
+            PaginatedList<ResponseQuestionModel> paginatedList = await _questionService.GetAllQuestion(searchName, index, PageSize, orderBy, sortBy);
             return Ok(BaseResponse<IReadOnlyCollection<ResponseQuestionModel>>.OkDataResponse(paginatedList, "Lấy danh sách thành công"));
 
         }

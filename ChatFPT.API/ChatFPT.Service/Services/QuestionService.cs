@@ -9,6 +9,8 @@ using ChatFPT.Service.Insfracstructure;
 using ChatFPT.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Dynamic.Core.Exceptions;
+using System.Linq.Dynamic.Core;
 
 namespace ChatFPT.Service.Services
 {
@@ -56,7 +58,7 @@ namespace ChatFPT.Service.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task<PaginatedList<ResponseQuestionModel>> GetAllQuestion(string? searchName, int index = 1, int PageSize = 10)
+        public async Task<PaginatedList<ResponseQuestionModel>> GetAllQuestion(string? searchName, int index, int PageSize, string orderBy, string sortBy)
         {
             IQueryable<ResponseQuestionModel> query = from question in _unitOfWork.GetRepository<Question>().Entities
                                                       join questionTag in _unitOfWork.GetRepository<QuestionTag>().Entities on question.Id equals questionTag.QuestionId
@@ -75,6 +77,20 @@ namespace ChatFPT.Service.Services
             {
                 query = query.Where(q => q.Content!.Contains(searchName));
             }
+
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                string sortDirection = (sortBy?.ToLower() == "desc") ? "descending" : "ascending";
+                try
+                {
+                    query = query.OrderBy($"{orderBy} {sortDirection}");
+                }
+                catch (ParseException)
+                {
+                    query = query.OrderBy("Id");
+                }
+            }
+
             PaginatedList<ResponseQuestionModel> paginatedQuestion = await _unitOfWork.GetRepository<ResponseQuestionModel>().GetPagingAsync(query, index, PageSize);
             return paginatedQuestion;
         }

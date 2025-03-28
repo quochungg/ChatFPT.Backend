@@ -6,6 +6,7 @@ using ChatFPT.Core.Models.Feedback;
 using ChatFPT.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace ChatFPT.API.Controllers
 {
@@ -46,10 +47,11 @@ namespace ChatFPT.API.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> GetCategory(string? searchName, int index = 1, int pageSize = 10, string orderBy = "CategoryId", string sortBy = "DESC")
         [CacheAtribute(1000)]
         public async Task<IActionResult> GetCategory(string? searchName, int index = 1, int pageSize = 10)
         {
-            var data = await _categoryService.GetCategoriesAsync(searchName, index, pageSize);
+            var data = await _categoryService.GetCategoriesAsync(searchName, index, pageSize,  orderBy,  sortBy);
             return Ok(BaseResponseModel<IReadOnlyCollection<ResponseCategoryModel>>.OkDataResponse(data, "Lấy data thành công"));
         }
 

@@ -5,7 +5,7 @@ namespace ChatFPT.Service.Interfaces
 {
     public interface ICategoryService
     {
-        Task<PaginatedList<ResponseCategoryModel>> GetCategoriesAsync(string? searchName , int index , int PageSize);
+        Task<PaginatedList<ResponseCategoryModel>> GetCategoriesAsync(string? searchName , int index , int PageSize, string orderBy, string sortBy);
 
         Task<ResponseCategoryModel> GetCategoryId(string id);
 

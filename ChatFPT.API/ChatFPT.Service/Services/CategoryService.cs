@@ -1,18 +1,16 @@
-﻿
-
-using AutoMapper;
+﻿using AutoMapper;
 using ChatFPT.Application.Interface;
 using ChatFPT.Core.Constaints;
 using ChatFPT.Core.ExceptionCustom;
 using ChatFPT.Core.Models.Category;
-using ChatFPT.Core.Models.Role;
 using ChatFPT.Core.Pagination;
-using ChatFPT.Core.Utils;
 using ChatFPT.Domain.Entities;
 using ChatFPT.Service.Insfracstructure;
 using ChatFPT.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Dynamic.Core;
+using System.Linq.Dynamic.Core.Exceptions;
 
 namespace ChatFPT.Service.Services
 {
@@ -49,7 +47,7 @@ namespace ChatFPT.Service.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task<PaginatedList<ResponseCategoryModel>> GetCategoriesAsync(string? searchName, int index, int PageSize)
+        public async Task<PaginatedList<ResponseCategoryModel>> GetCategoriesAsync(string? searchName, int index, int PageSize, string orderBy, string sortBy)
         {
             IQueryable<ResponseCategoryModel> query = from category in
                                               _unitOfWork.GetRepository<Category>().Entities
@@ -59,15 +57,25 @@ namespace ChatFPT.Service.Services
                                                           CategoryId = category.Id,
                                                           CategoryName = category.CategoryName,
                                                           Description = category.Description,
-
                                                           CreatedTime = category.CreatedTime
-
-
                                                       };
 
             if (!string.IsNullOrWhiteSpace(searchName))
             {
                 query = query.Where(s => s.CategoryName!.Contains(searchName));
+            }
+
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                string sortDirection = (sortBy?.ToLower() == "desc") ? "descending" : "ascending";
+                try
+                {
+                    query = query.OrderBy($"{orderBy} {sortDirection}");
+                }
+                catch (ParseException)
+                {
+                    query = query.OrderBy("CategoryId");
+                }
             }
 
             PaginatedList<ResponseCategoryModel> paginatedCate = await _unitOfWork.GetRepository<ResponseCategoryModel>().GetPagingAsync(query, index, PageSize);
