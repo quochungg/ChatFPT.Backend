@@ -11,6 +11,8 @@ namespace ChatFPT.Domain.Entities
         public bool isGoogle { get; set; }
 
         public string? GoogleId { get; set; }
+
+        public string? DeviceToken { get; set; }
         public DateTimeOffset? CreatedTime { get; set; }
 
         public DateTimeOffset? LastUpdatedTime { get; set; }
