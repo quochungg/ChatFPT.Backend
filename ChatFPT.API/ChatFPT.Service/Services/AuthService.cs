@@ -86,13 +86,13 @@ namespace ChatFPT.Service.Services
             }
             ApplicationUser? userUpdate = await _unitOfWork.GetRepository<ApplicationUser>().Entities.FirstOrDefaultAsync(u => u.Id == result.User.Id);
 
-            userUpdate!.DeviceToken = result.User.DeviceToken;
+            userUpdate!.DeviceToken = model.DeviceToken;
             await _unitOfWork.GetRepository<ApplicationUser>().UpdateAsync(userUpdate);
             await _unitOfWork.SaveAsync();
             return new LoginResponse()
             {
                 TokenResponse = await Authentication.CreateToken(result.User!,result.RoleName!, _jwtSettings),
-                DeviceToken = result.DeviceToken,
+                DeviceToken = userUpdate.DeviceToken,
                 
             };
         }

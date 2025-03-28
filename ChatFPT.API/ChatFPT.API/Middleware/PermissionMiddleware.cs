@@ -56,56 +56,56 @@ namespace ChatFPT.API.Middleware
             {
                 return true;
             }
-            string token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", string.Empty);
-             if (IsValidToken(token) != "access")
-            {
-                throw new ErrorException(StatusCodes.Status403Forbidden, ResponseCodeConstaints.FORBIDDEN, "Chỉ cho phép truy cập bằng Access Token.");
-            }
-            if (!requestUri.StartsWith("/api/auth/refresh-token"))
-            {
-                if (IsTokenExpired(context) && IsValidToken(token) == "access")
-                {
-                    throw new ErrorException(StatusCodes.Status401Unauthorized, ResponseCodeConstaints.UNAUTHORIZED, "Token không hợp lệ");
-                }
-            }
+            //string token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", string.Empty);
+            // if (IsValidToken(token) != "access")
+            //{
+            //    throw new ErrorException(StatusCodes.Status403Forbidden, ResponseCodeConstaints.FORBIDDEN, "Chỉ cho phép truy cập bằng Access Token.");
+            //}
+            //if (!requestUri.StartsWith("/api/auth/refresh-token"))
+            //{
+            //    if (IsTokenExpired(context) && IsValidToken(token) == "access")
+            //    {
+            //        throw new ErrorException(StatusCodes.Status401Unauthorized, ResponseCodeConstaints.UNAUTHORIZED, "Token không hợp lệ");
+            //    }
+            //}
 
-            try
-            {
-                string userId = Authentication.GetUserIdFromHttpContext(context);
+            //try
+            //{
+            //    string userId = Authentication.GetUserIdFromHttpContext(context);
                 
                 
-                    IEnumerable<ApplicationRoleClaims>? roleClaims = unitOfWork.GetRepository<ApplicationUserRoles>()
-                    .Entities.Where(r => r.UserId.ToString() == userId)
-                    .Join(
-                        unitOfWork.GetRepository<ApplicationRole>().Entities,
-                        userRole => userRole.RoleId,
-                        role => role.Id,
-                        (userRole, role) => new { role.Id }
-                    )
-                    .SelectMany(role => unitOfWork.GetRepository<ApplicationRoleClaims>()
-                        .Entities.Where(rc => rc.RoleId == role.Id))
-                    .ToList();
+            //        IEnumerable<ApplicationRoleClaims>? roleClaims = unitOfWork.GetRepository<ApplicationUserRoles>()
+            //        .Entities.Where(r => r.UserId.ToString() == userId)
+            //        .Join(
+            //            unitOfWork.GetRepository<ApplicationRole>().Entities,
+            //            userRole => userRole.RoleId,
+            //            role => role.Id,
+            //            (userRole, role) => new { role.Id }
+            //        )
+            //        .SelectMany(role => unitOfWork.GetRepository<ApplicationRoleClaims>()
+            //            .Entities.Where(rc => rc.RoleId == role.Id))
+            //        .ToList();
 
                     
 
-                if (roleClaims != null)
-                {
-                    // Kiểm tra trong RoleClaims
-                    foreach (var roleClaim in roleClaims)
-                    {
-                        if (roleClaim.ClaimType!.Equals(httpMethod, StringComparison.OrdinalIgnoreCase)
-                            && requestUri.StartsWith(roleClaim.ClaimValue ?? "Unknown", StringComparison.OrdinalIgnoreCase))
-                        {
-                            return true;
-                        }
-                    }                
-                }
-            }
+            //    if (roleClaims != null)
+            //    {
+            //        // Kiểm tra trong RoleClaims
+            //        foreach (var roleClaim in roleClaims)
+            //        {
+            //            if (roleClaim.ClaimType!.Equals(httpMethod, StringComparison.OrdinalIgnoreCase)
+            //                && requestUri.StartsWith(roleClaim.ClaimValue ?? "Unknown", StringComparison.OrdinalIgnoreCase))
+            //            {
+            //                return true;
+            //            }
+            //        }                
+            //    }
+            //}
 
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error while checking permissions");
-            }
+            //catch (Exception ex)
+            //{
+            //    _logger.LogError(ex, "Error while checking permissions");
+            //}
 
             return true;
         
