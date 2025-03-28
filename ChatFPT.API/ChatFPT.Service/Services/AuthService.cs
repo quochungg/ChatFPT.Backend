@@ -79,11 +79,16 @@ namespace ChatFPT.Service.Services
             LoginQueryModel? result = await queryModels.FirstOrDefaultAsync()
                 ?? throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "Sai tên đăng nhập hoặc mật khẩu");
 
+            
             if(!_passwordHasher.Verify(result.User!.PasswordHash!, model.Password))
             {
                  throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "Sai tên đăng nhập hoặc mật khẩu");
             }
+            ApplicationUser? userUpdate = await _unitOfWork.GetRepository<ApplicationUser>().Entities.FirstOrDefaultAsync(u => u.Id == result.User.Id);
 
+            userUpdate!.DeviceToken = result.User.DeviceToken;
+            await _unitOfWork.GetRepository<ApplicationUser>().UpdateAsync(userUpdate);
+            await _unitOfWork.SaveAsync();
             return new LoginResponse()
             {
                 TokenResponse = await Authentication.CreateToken(result.User!,result.RoleName!, _jwtSettings),

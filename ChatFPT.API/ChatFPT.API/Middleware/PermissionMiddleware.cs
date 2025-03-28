@@ -107,7 +107,7 @@ namespace ChatFPT.API.Middleware
                 _logger.LogError(ex, "Error while checking permissions");
             }
 
-            return false;
+            return true;
         
     }
 
