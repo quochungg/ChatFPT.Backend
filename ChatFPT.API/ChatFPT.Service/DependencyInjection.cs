@@ -33,6 +33,7 @@ namespace ChatFPT.Service
             services.AddScoped<IRoleClaimService, RoleClaimService>();
             services.AddScoped<IRedisService, RedisService>();
             services.AddScoped<IFcmService, FcmService>();
+            services.AddScoped<IUploadDataService, UploadDataService>();
         }
         private static void AddAutoMapper(this IServiceCollection services)
         {
