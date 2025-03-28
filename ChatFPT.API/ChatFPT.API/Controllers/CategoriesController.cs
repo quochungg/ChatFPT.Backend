@@ -46,10 +46,9 @@ namespace ChatFPT.API.Controllers
             return Ok(BaseResponseModel<string>.OkMessageResponseModel("Xóa Category thành công"));
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetCategory(string? searchName, int index = 1, int pageSize = 10, string orderBy = "CategoryId", string sortBy = "DESC")
+        [HttpGet]      
         [CacheAtribute(1000)]
-        public async Task<IActionResult> GetCategory(string? searchName, int index = 1, int pageSize = 10)
+        public async Task<IActionResult> GetCategory(string? searchName, int index = 1, int pageSize = 10, string orderBy = "CategoryId", string sortBy = "DESC")
         {
             var data = await _categoryService.GetCategoriesAsync(searchName, index, pageSize,  orderBy,  sortBy);
             return Ok(BaseResponseModel<IReadOnlyCollection<ResponseCategoryModel>>.OkDataResponse(data, "Lấy data thành công"));
