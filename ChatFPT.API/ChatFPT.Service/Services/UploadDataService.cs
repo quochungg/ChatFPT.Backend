@@ -4,7 +4,6 @@ using ChatFPT.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Pinecone;
-//using Pinecone.Grpc;
 using System.Text;
 using System.Text.Json;
 
@@ -148,13 +147,9 @@ public class UploadDataService : IUploadDataService
             return null;
         }
 
-        // Mã hóa câu hỏi thành vector bằng OpenAI (hoặc dùng SentenceTransformer)
         var embedding = await GetEmbeddingAsync(query);
         if (embedding == null) return null;
 
-
-
-        // Truy vấn Pinecone
         var queryResponse = await index.QueryAsync(new QueryRequest
         {
             Vector = embedding.ToArray(),
