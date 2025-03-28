@@ -4,6 +4,6 @@
     {
         Task<List<float>> GetEmbeddingAsync(string text);
         Task<bool> UploadDataToPineconeAsync(List<string> documents);
-        //Task<string> QueryDataAsync(string query);
+        Task<string> QueryDataAsync(string question);
     }
 }
