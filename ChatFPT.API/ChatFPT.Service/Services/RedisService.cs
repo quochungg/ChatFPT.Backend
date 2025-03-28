@@ -13,8 +13,6 @@ namespace ChatFPT.Service.Services
 {
     public class RedisService : IRedisService
     {
-        private readonly IDistributedCache _cache;
-
         private readonly IConnectionMultiplexer _connectionMultiplexer;
         private readonly IDistributedCache _distributedCache;
         public RedisService(IConnectionMultiplexer connectionMultiplexer, IDistributedCache distributedCache)
