@@ -34,6 +34,8 @@ namespace ChatFPT.Service.Services
             answer.CreatedTime = DateTime.Now;
             await _unitOfWork.GetRepository<Answer>().AddAsync(answer);
             await _unitOfWork.SaveAsync();
+
+            
         }
 
         public async Task DeleteAnswer(string? answerId)

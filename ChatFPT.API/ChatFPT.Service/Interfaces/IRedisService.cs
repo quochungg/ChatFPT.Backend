@@ -4,8 +4,8 @@ namespace ChatFPT.Service.Interfaces
 {
     public interface IRedisService
     {
-        public T? GetData<T>(string key);
-
-        void SetData<T>(string key, T data);
+        Task SetCacheResponseAsync(string key, object reponse, TimeSpan timeOut);
+        Task<string?> GetCacheResponseAsync(string key);
+        Task RemoveCacheResponseAsync(string pattern);
     }
 }

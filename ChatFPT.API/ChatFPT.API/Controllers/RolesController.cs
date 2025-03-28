@@ -1,4 +1,5 @@
 ﻿
+using ChatFPT.API.MiddleWare.Attributes;
 using ChatFPT.Core.Base;
 using ChatFPT.Core.Models.Role;
 using ChatFPT.Core.Pagination;
@@ -12,12 +13,15 @@ namespace ChatFPT.API.Controllers
     public class RolesController : ControllerBase
     {
         private readonly IRoleService _roleService;
-        public RolesController(IRoleService roleService)
+        private readonly IRedisService _redisService;
+        public RolesController(IRoleService roleService, IRedisService redisService)
         {
             _roleService = roleService;
+            _redisService = redisService;
         }
 
         [HttpGet]
+        [CacheAtribute(1000)]
         public async Task<IActionResult> GetAllRoleAsync(string? searchName, int index = 1, int PageSize = 10) {
             PaginatedList<ResponseRoleModel> list = await _roleService.GetAllRole(searchName, index, PageSize);
             return Ok(BaseResponse<IReadOnlyCollection<ResponseRoleModel>>.OkDataResponse(list, "Lấy danh sách thành công"));
@@ -26,12 +30,14 @@ namespace ChatFPT.API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateRoleAsync(CreateRoleModel model) {
             await _roleService.CreateRole(model);
+            await _redisService.RemoveCacheResponseAsync("/api/roles");
             return Ok(BaseResponse<string>.OkMessageResponseModel("Tạo mới Role thành công"));
         }
 
         [HttpPut]
         public async Task<IActionResult> UpdateRoleAsync(UpdateRoleModel model) { 
             await _roleService.UpdateRole(model);
+            await _redisService.RemoveCacheResponseAsync("/api/roles");
             return Ok(BaseResponse<string>.OkMessageResponseModel("Cập nhật Role thành công"));
         }
 
@@ -39,10 +45,12 @@ namespace ChatFPT.API.Controllers
         public async Task<IActionResult> DeleteRoleAsync (Guid id)
         {
             await _roleService.DeleteRole(id);
+            await _redisService.RemoveCacheResponseAsync("/api/roles");
             return Ok(BaseResponse<string>.OkMessageResponseModel("Xóa Role thành công"));
         }
 
         [HttpGet("{id}")]
+        [CacheAtribute(1000)]
         public async Task<IActionResult> GetRoleByIdAsync(Guid id)
         {
             ResponseRoleModel model = await _roleService.GetRoleById(id);

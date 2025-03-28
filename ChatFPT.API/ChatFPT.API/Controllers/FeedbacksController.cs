@@ -1,4 +1,5 @@
 ﻿
+using ChatFPT.API.MiddleWare.Attributes;
 using ChatFPT.Core.Base;
 using ChatFPT.Core.Models.Feedback;
 using ChatFPT.Service.Interfaces;
@@ -11,14 +12,17 @@ namespace ChatFPT.API.Controllers
     public class FeedbacksController : ControllerBase
     {
         private readonly IFeedBackService _feedbackService;
-        public FeedbacksController(IFeedBackService feedbackService)
+        private readonly IRedisService _redisService;
+        public FeedbacksController(IFeedBackService feedbackService, IRedisService redisService)
         {
             _feedbackService = feedbackService;
+            _redisService = redisService;
         }
         [HttpPost]
         public async Task<IActionResult> CreateFeedback(CreateFeedbackModel model)
         {
             await _feedbackService.CreateFeedbackAsync(model);
+            await _redisService.RemoveCacheResponseAsync("/api/feedbacks");
             return Ok(BaseResponseModel<string>.OkMessageResponseModel("Tạo mới Feedback thành công"));
         }
 
@@ -26,6 +30,7 @@ namespace ChatFPT.API.Controllers
         public async Task<IActionResult> UpdateFeedback(UpdateFeedbackModel model)
         {
             await _feedbackService.UpdateFeedbackAsync(model);
+            await _redisService.RemoveCacheResponseAsync("/api/feedbacks");
             return Ok(BaseResponseModel<string>.OkMessageResponseModel("Cập nhập Feedback thành công"));
         }
 
@@ -33,10 +38,12 @@ namespace ChatFPT.API.Controllers
         public async Task<IActionResult> DeleteFeedback(string id)
         {
             await _feedbackService.DeleteFeedbackAsync(id);
+            await _redisService.RemoveCacheResponseAsync("/api/feedbacks");
             return Ok(BaseResponseModel<string>.OkMessageResponseModel("Xóa Category thành công"));
         }
 
         [HttpGet]
+        [CacheAtribute(1000)]
         public async Task<IActionResult> GetFeedback(string? searchName, int index = 1, int pageSize = 10)
         {
             var data = await _feedbackService.GetFeedbacksAsync(searchName, index, pageSize);
@@ -44,6 +51,7 @@ namespace ChatFPT.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [CacheAtribute(1000)]
         public async Task<IActionResult> GetFeedbackById(string id)
         {
             var data = await _feedbackService.GetFeedbackId(id);

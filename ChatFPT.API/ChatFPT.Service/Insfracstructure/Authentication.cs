@@ -143,7 +143,52 @@ namespace ChatFPT.Service.Insfracstructure
                 throw; // Re-throw the exception to maintain the error flow
             }
         }
+        public static string GetUserIdFromHttpContext(HttpContext httpContext)
+        {
+            try
+            {
+                if (!httpContext.Request.Headers.ContainsKey("Authorization"))
+                {
+                    throw new UnauthorizedException("Need Authorization");
+                }
 
+                string? authorizationHeader = httpContext.Request.Headers["Authorization"];
+
+                if (string.IsNullOrWhiteSpace(authorizationHeader) || !authorizationHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new UnauthorizedException($"Invalid authorization header: {authorizationHeader}");
+                }
+
+                string jwtToken = authorizationHeader["Bearer ".Length..].Trim();
+                var tokenHandler = new JwtSecurityTokenHandler();
+
+                if (!tokenHandler.CanReadToken(jwtToken))
+                {
+                    throw new UnauthorizedException("Invalid token format");
+                }
+
+                var token = tokenHandler.ReadJwtToken(jwtToken);
+                var idClaim = token.Claims.FirstOrDefault(claim => claim.Type == "id");
+
+                return idClaim?.Value ?? throw new UnauthorizedException("Cannot get userId from token");
+            }
+            catch (UnauthorizedException ex)
+            {
+                var errorResponse = new
+                {
+                    data = "An unexpected error occurred.",
+                    message = ex.Message,
+                    statusCode = StatusCodes.Status401Unauthorized,
+                    code = "Unauthorized!"
+                };
+
+                var jsonResponse = JsonSerializer.Serialize(errorResponse);
+                httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                httpContext.Response.ContentType = "application/json";
+                httpContext.Response.WriteAsync(jsonResponse).Wait();
+                throw;
+            }
+        }
         public class UnauthorizedException : Exception
         {
             public UnauthorizedException(string message) : base(message) { }

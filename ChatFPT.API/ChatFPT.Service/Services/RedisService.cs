@@ -1,7 +1,13 @@
 ﻿
 
 using ChatFPT.Service.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json;
+using StackExchange.Redis;
+using ChatFPT.Core.ExceptionCustom;
+using ChatFPT.Core.Constaints;
 
 namespace ChatFPT.Service.Services
 {
@@ -9,20 +15,55 @@ namespace ChatFPT.Service.Services
     {
         private readonly IDistributedCache _cache;
 
-        public RedisService(IDistributedCache cache)
+        private readonly IConnectionMultiplexer _connectionMultiplexer;
+        private readonly IDistributedCache _distributedCache;
+        public RedisService(IConnectionMultiplexer connectionMultiplexer, IDistributedCache distributedCache)
         {
-            _cache = cache;
-
+            _connectionMultiplexer = connectionMultiplexer;
+            _distributedCache = distributedCache;
+        }
+        public async Task<string?> GetCacheResponseAsync(string key)
+        {
+            var cacheResponse = await _distributedCache.GetStringAsync(key);
+            return string.IsNullOrEmpty(cacheResponse) ? null : cacheResponse;
         }
 
-        public T? GetData<T>(string key)
+        public async Task RemoveCacheResponseAsync(string pattern)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(pattern))
+                throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstaints.NOT_FOUND, "Value can not be null or whitespace");
+            await foreach (var key in GetKeysAsync(pattern + "*"))
+            {
+                await _distributedCache.RemoveAsync(key);
+            }
+        }
+        private async IAsyncEnumerable<string> GetKeysAsync(string pattern)
+        {
+            if (string.IsNullOrEmpty(pattern))
+                throw new ErrorException(StatusCodes.Status404NotFound, ResponseCodeConstaints.NOT_FOUND, "Value can not be null or whitespace");
+            foreach (var endPoint in _connectionMultiplexer.GetEndPoints())
+            {
+                var server = _connectionMultiplexer.GetServer(endPoint);
+                foreach (var key in server.Keys(pattern: pattern))
+                {
+                    yield return key.ToString();
+                }
+            }
         }
 
-        public void SetData<T>(string key, T data)
+        public async Task SetCacheResponseAsync(string key, object reponse, TimeSpan timeOut)
         {
-            throw new NotImplementedException();
+            if (reponse == null)
+                return;
+
+            var serializedResponse = JsonConvert.SerializeObject(reponse, new JsonSerializerSettings()
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            });
+            await _distributedCache.SetStringAsync(key, serializedResponse, new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = timeOut
+            });
         }
     }
 }

@@ -1,15 +1,21 @@
 ﻿using ChatFPT.Application.Interface;
 using ChatFPT.Application.Repositories.ChatFPT.Infrastructure.Repositories;
+using ChatFPT.Core.Models;
+using ChatFPT.Core.Utils;
 using ChatFPT.Domain.Base;
 using ChatFPT.Insfracstructure.Base;
 using FirebaseAdmin;
+using FirebaseAdmin.Auth;
+using FirebaseAdmin.Messaging;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client.Platforms.Features.DesktopOs.Kerberos;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
+using StackExchange.Redis;
 using System.Reflection;
 using System.Text;
 
@@ -28,7 +34,8 @@ namespace ChatFPT.API.DI
             services.JwtSettingsConfig(configuration);
             services.AddAuthenJwt();
             services.AddFirebaseAuth(configuration);
-            //services.ConfigRedis(configuration);
+            services.AddRedis(configuration);
+
         }
         public static void JwtSettingsConfig(this IServiceCollection services, IConfiguration configuration)
         {
@@ -60,16 +67,24 @@ namespace ChatFPT.API.DI
             });
         }
 
-        public static void ConfigRedis(this IServiceCollection services, IConfiguration configuration) 
-            {
-            services.AddStackExchangeRedisCache(op =>
-            {
-                string cnn = configuration.GetConnectionString("Redis");
+        public static void AddRedis(this IServiceCollection services, IConfiguration configuration)
+        {
+            RedisConfiguration redisSetting = new RedisConfiguration();
+            configuration.GetSection("RedisConfiguration").Bind(redisSetting);
 
-                op.Configuration = cnn;
-            });             
-    }
-    public static void AddUnitOfWork(this IServiceCollection services)
+            services.AddSingleton(redisSetting);
+
+            if (!redisSetting.Enabled)
+                return;
+
+            services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(redisSetting.ConnectionString));
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = redisSetting.ConnectionString;
+            });
+
+        }
+        public static void AddUnitOfWork(this IServiceCollection services)
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
@@ -189,17 +204,25 @@ namespace ChatFPT.API.DI
         public static void AddFirebaseAuth(this IServiceCollection services, IConfiguration configuration)
         {
             var firebaseConfig = configuration.GetSection("FireBase").Get<Dictionary<string, string>>();
+            
 
             if (firebaseConfig != null)
             {
                 var credential = GoogleCredential.FromJson(JsonConvert.SerializeObject(firebaseConfig));
 
-                FirebaseApp.Create(new AppOptions
+               var firebaseApp =  FirebaseApp.Create(new AppOptions
                 {
                     Credential = credential
                 });
+                services.AddSingleton(credential);
+                services.AddSingleton(firebaseApp);
+
             }
-           
+            
+            services.AddSingleton(provider => FirebaseAuth.GetAuth(provider.GetRequiredService<FirebaseApp>()));
+            services.AddSingleton(provider => FirebaseMessaging.GetMessaging(provider.GetRequiredService<FirebaseApp>()));
+
+            services.AddSingleton<FirebaseAuthHelper>();
         }
     }
 }

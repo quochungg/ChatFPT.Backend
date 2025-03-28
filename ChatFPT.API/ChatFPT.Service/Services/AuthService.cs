@@ -72,6 +72,8 @@ namespace ChatFPT.Service.Services
                                                       {
                                                           User = user,
                                                           RoleName = role.Name,
+                                                          DeviceToken = user.DeviceToken,
+                                                          
                                                       };
 
             LoginQueryModel? result = await queryModels.FirstOrDefaultAsync()
@@ -84,7 +86,9 @@ namespace ChatFPT.Service.Services
 
             return new LoginResponse()
             {
-                TokenResponse = await Authentication.CreateToken(result.User!,result.RoleName!, _jwtSettings)
+                TokenResponse = await Authentication.CreateToken(result.User!,result.RoleName!, _jwtSettings),
+                DeviceToken = result.DeviceToken,
+                
             };
         }
 

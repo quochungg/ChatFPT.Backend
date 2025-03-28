@@ -1,4 +1,5 @@
 ﻿
+using ChatFPT.API.MiddleWare.Attributes;
 using ChatFPT.Core.Base;
 using ChatFPT.Core.Models.Answer;
 using ChatFPT.Core.Pagination;
@@ -12,13 +13,17 @@ namespace ChatFPT.API.Controllers
     public class AnswersController : ControllerBase
     {
         private readonly IAnswerService _answerService;
+        private readonly IRedisService _redisService;
 
-        public AnswersController(IAnswerService answerService)
+        public AnswersController(IAnswerService answerService, IRedisService redisService)
         {
             _answerService = answerService;
+            _redisService = redisService;
+
         }
 
         [HttpGet]
+        [CacheAtribute(1000)]
         public async Task<IActionResult> GetAllAnswer(string? searchName, int index = 1, int pageSize = 10)
         {
             PaginatedList<ResponseAnswerModel> list = await _answerService.GetAllAnswers(searchName, index, pageSize);
@@ -29,13 +34,16 @@ namespace ChatFPT.API.Controllers
         public async Task<IActionResult> CreateAnswer(CreateAnswerModel model)
         {
             await _answerService.CreateAnswer(model);
+            await _redisService.RemoveCacheResponseAsync("/api/answers");
             return Ok(BaseResponse<string>.OkMessageResponseModel("Tạo mới thành công"));
+            
         }
 
         [HttpPut]
         public async Task<IActionResult> UpdateAnswer(UpdateAnswerModel model)
         {
             await _answerService.UpdateAnswer(model);
+            await _redisService.RemoveCacheResponseAsync("api/answers");
             return Ok(BaseResponse<string>.OkMessageResponseModel("Cập nhật thành công"));
         }
 
@@ -43,10 +51,12 @@ namespace ChatFPT.API.Controllers
         public async Task<IActionResult> DeleteAnswer(string? id)
         {
             await _answerService.DeleteAnswer(id);
+            await _redisService.RemoveCacheResponseAsync("api/answers");
             return Ok(BaseResponse<string>.OkMessageResponseModel("Xóa thành công"));
         }
 
         [HttpGet("{id}")]
+        [CacheAtribute(1000)]
         public async Task<IActionResult> GetAnswerById(string id)
         {
             var data = await _answerService.GetAnswerById(id);
@@ -54,6 +64,7 @@ namespace ChatFPT.API.Controllers
         }
 
         [HttpGet("question/{id}")]
+        [CacheAtribute(1000)]
         public async Task<IActionResult> GetAnswerByQuestionId(string? id)
         {
             ResponseAnswerModel model = await _answerService.GetAnswerByQuestionId(id);

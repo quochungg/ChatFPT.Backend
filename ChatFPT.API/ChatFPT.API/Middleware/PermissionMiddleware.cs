@@ -1,6 +1,12 @@
 ﻿using ChatFPT.Application.Interface;
+using ChatFPT.Core.Constaints;
+using ChatFPT.Core.ExceptionCustom;
+using ChatFPT.Domain.Entities;
 using ChatFPT.Service.Insfracstructure;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace ChatFPT.API.Middleware
 {
@@ -10,7 +16,6 @@ namespace ChatFPT.API.Middleware
         private readonly ILogger<PermissionMiddleware> _logger;
         private readonly IEnumerable<string> _excludedUris;
         private readonly IMemoryCache _cache;
-        private string? _cacheKey;
 
         public PermissionMiddleware(RequestDelegate next, ILogger<PermissionMiddleware> logger, IMemoryCache cache)
         {
@@ -51,16 +56,103 @@ namespace ChatFPT.API.Middleware
             {
                 return true;
             }
-            //try
-            //{
+            string token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", string.Empty);
+             if (IsValidToken(token) != "access")
+            {
+                throw new ErrorException(StatusCodes.Status403Forbidden, ResponseCodeConstaints.FORBIDDEN, "Chỉ cho phép truy cập bằng Access Token.");
+            }
+            if (!requestUri.StartsWith("/api/auth/refresh-token"))
+            {
+                if (IsTokenExpired(context) && IsValidToken(token) == "access")
+                {
+                    throw new ErrorException(StatusCodes.Status401Unauthorized, ResponseCodeConstaints.UNAUTHORIZED, "Token không hợp lệ");
+                }
+            }
 
-            //}
-            //catch (Exception ex)
-            //{
-            //    _logger.LogError(ex, "Error while checking permissions");
-            //}
+            try
+            {
+                string userId = Authentication.GetUserIdFromHttpContext(context);
+                
+                
+                    IEnumerable<ApplicationRoleClaims>? roleClaims = unitOfWork.GetRepository<ApplicationUserRoles>()
+                    .Entities.Where(r => r.UserId.ToString() == userId)
+                    .Join(
+                        unitOfWork.GetRepository<ApplicationRole>().Entities,
+                        userRole => userRole.RoleId,
+                        role => role.Id,
+                        (userRole, role) => new { role.Id }
+                    )
+                    .SelectMany(role => unitOfWork.GetRepository<ApplicationRoleClaims>()
+                        .Entities.Where(rc => rc.RoleId == role.Id))
+                    .ToList();
 
-            return true;
+                    
+
+                if (roleClaims != null)
+                {
+                    // Kiểm tra trong RoleClaims
+                    foreach (var roleClaim in roleClaims)
+                    {
+                        if (roleClaim.ClaimType!.Equals(httpMethod, StringComparison.OrdinalIgnoreCase)
+                            && requestUri.StartsWith(roleClaim.ClaimValue ?? "Unknown", StringComparison.OrdinalIgnoreCase))
+                        {
+                            return true;
+                        }
+                    }                
+                }
+            }
+
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while checking permissions");
+            }
+
+            return false;
+        
+    }
+
+
+        private string IsValidToken(string token)
+        {
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            JwtSecurityToken jwtToken = tokenHandler.ReadJwtToken(token);
+            Claim tokenTypeClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "token_type")
+                ?? throw new ErrorException(StatusCodes.Status401Unauthorized, ResponseCodeConstaints.UNAUTHORIZED, "Không tìm thấy token type");
+
+            return tokenTypeClaim.Value;
+
+        }
+
+        private bool IsTokenExpired(HttpContext context)
+        {
+            // Lấy token từ Header Authorization
+            string token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", string.Empty);
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return true;
+            }
+
+            try
+            {
+                // Giải mã và kiểm tra token
+                JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+                JwtSecurityToken jwtToken = tokenHandler.ReadJwtToken(token);
+
+                // Lấy thời gian hết hạn từ token
+                DateTime expiration = jwtToken.ValidTo;
+
+                if (expiration < DateTime.UtcNow)
+                {
+                    return true;
+                }
+            }
+            catch (SecurityTokenException)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

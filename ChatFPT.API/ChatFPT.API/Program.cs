@@ -3,6 +3,7 @@
 using ChatFPT.API.DI;
 using ChatFPT.API.Middleware;
 using ChatFPT.API.MiddleWare;
+using ChatFPT.API.MiddleWare.Attributes;
 using ChatFPT.Service;
 
 var builder = WebApplication.CreateBuilder(args);

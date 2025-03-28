@@ -7,5 +7,7 @@ namespace ChatFPT.Core.Models.User
         public ApplicationUser? User { get; set; }
 
         public string? RoleName { get; set; }
+
+        public string? DeviceToken { get; set; }
     }
 }

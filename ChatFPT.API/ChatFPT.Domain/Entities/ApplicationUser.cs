@@ -8,7 +8,6 @@ namespace ChatFPT.Domain.Entities
         public string? FullName { get; set; }
         public string? MSSV { get; set; }
         public string? Password { get; set; }
-
         public bool isGoogle { get; set; }
 
         public string? GoogleId { get; set; }

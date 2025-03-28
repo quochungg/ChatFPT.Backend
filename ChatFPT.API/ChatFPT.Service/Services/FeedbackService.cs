@@ -19,11 +19,13 @@ namespace ChatFPT.Service.Services
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IHttpContextAccessor _contextAccessor;
-        public FeedbackService(IMapper mapper, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor)
+        private readonly IFcmService _fcmService;
+        public FeedbackService(IMapper mapper, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor, IFcmService fcmService)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
             _contextAccessor = httpContextAccessor;
+            _fcmService = fcmService;
         }
         public async Task CreateFeedbackAsync(CreateFeedbackModel model)
         {

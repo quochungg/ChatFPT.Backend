@@ -1,4 +1,5 @@
 ﻿
+using ChatFPT.API.MiddleWare.Attributes;
 using ChatFPT.Core.Base;
 using ChatFPT.Core.Models.Category;
 using ChatFPT.Core.Models.Feedback;
@@ -13,14 +14,17 @@ namespace ChatFPT.API.Controllers
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
-        public CategoriesController(ICategoryService categoryService)
+        private readonly IRedisService _redisService;
+        public CategoriesController(ICategoryService categoryService, IRedisService redisService)
         {
             _categoryService = categoryService;
+            _redisService = redisService;
         }
         [HttpPost]
         public async Task<IActionResult> CreateCategory(CreateCategoryModel model)
         {
             await _categoryService.CreateCategoryAsync(model);
+            await _redisService.RemoveCacheResponseAsync("/api/categories");
             return Ok(BaseResponseModel<string>.OkMessageResponseModel("Tạo mới Category thành công"));
         }
 
@@ -28,6 +32,7 @@ namespace ChatFPT.API.Controllers
         public async Task<IActionResult> UpdateCategory(UpdateCategoryModel model)
         {
             await _categoryService.UpdateCategoryAsync(model);
+            await _redisService.RemoveCacheResponseAsync("/api/categories");
             return Ok(BaseResponseModel<string>.OkMessageResponseModel("Cập nhập Category thành công"));
         }
 
@@ -35,10 +40,13 @@ namespace ChatFPT.API.Controllers
         public async Task<IActionResult> DeleteCategory(string id)
         {
             await _categoryService.DeleteCategoryAsync(id);
+            await _redisService.RemoveCacheResponseAsync("/api/categories");
+
             return Ok(BaseResponseModel<string>.OkMessageResponseModel("Xóa Category thành công"));
         }
 
         [HttpGet]
+        [CacheAtribute(1000)]
         public async Task<IActionResult> GetCategory(string? searchName, int index = 1, int pageSize = 10)
         {
             var data = await _categoryService.GetCategoriesAsync(searchName, index, pageSize);
@@ -46,6 +54,7 @@ namespace ChatFPT.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [CacheAtribute(1000)]
         public async Task<IActionResult> GetCategoryById(string id)
         {
             var data = await _categoryService.GetCategoryId(id);
