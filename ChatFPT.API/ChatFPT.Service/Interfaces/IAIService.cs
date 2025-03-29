@@ -1,4 +1,5 @@
 ﻿using ChatFPT.Core.Models.AI;
+using ChatFPT.Core.Models.Answer;
 
 namespace ChatFPT.Service.Interfaces
 {
@@ -6,6 +7,6 @@ namespace ChatFPT.Service.Interfaces
     {
         Task<List<float>> GetEmbeddingAsync(string text);
         Task<bool> UploadDataToPineconeAsync(List<UploadDataModel> model);
-        Task<string> QueryDataAsync(string question);
+        Task<ResponseAnswerModel> QueryDataAsync(string question);
     }
 }
