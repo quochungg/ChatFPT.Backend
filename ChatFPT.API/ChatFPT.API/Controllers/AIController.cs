@@ -28,8 +28,8 @@ namespace ChatFPT.API.Controllers
         [HttpPost("query")]
         public async Task<IActionResult> QueryData(string question)
         {
-            var result = await _uploadDataService.QueryDataAsync(question);          
-            return Ok(result);
+            var result = await _uploadDataService.QueryDataAsync(question);
+            return Ok(BaseResponse<string>.OkDataResponse(result, "truy vấn data thành công"));
         }
     }
 }
