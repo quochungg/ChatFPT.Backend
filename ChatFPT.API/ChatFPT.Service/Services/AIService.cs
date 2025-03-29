@@ -89,7 +89,7 @@ public class AIService : IAIService
                     "- Quy trình học tập, quy định học vụ, học phí.\n" +
                     "- Hỗ trợ về tài khoản sinh viên, email, hệ thống LMS.\n" +
                     "- Câu lạc bộ, sự kiện, cơ hội học bổng, trao đổi sinh viên.\n\n" +
-                    "Nếu sinh viên có nhu cầu thực hiện các thủ tục, dịch vụ vui lòng liên hệ Trung tâm Dịch vụ Sinh viên tại Phòng 202, điện thoại : 028.73005585 , email: sschcm@fe.edu.vn\n" +
+                    "Nếu sinh viên có nhu cầu thực hiện các thủ tục, dịch vụ vui lòng liên hệ Trung tâm Dịch vụ Sinh viên tại Phòng 202, điện thoại : 028.73005585 , email: sschcm@fe.edu.vn\n"
                     },
                 new { role = "user", content = question }
             }
