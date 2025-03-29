@@ -1,8 +1,11 @@
-﻿using ChatFPT.Core.Models.AI;
+﻿using ChatFPT.Core.Base;
+using ChatFPT.Core.Models.AI;
+using ChatFPT.Core.Models.Answer;
 using ChatFPT.Domain.Entities;
 using ChatFPT.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace ChatFPT.API.Controllers
 {
@@ -19,7 +22,7 @@ namespace ChatFPT.API.Controllers
         public async Task<IActionResult> UploadTrainData(List<UploadDataModel> model)
         {
             var result = await _uploadDataService.UploadDataToPineconeAsync(model);
-            return Ok(result);
+            return Ok(BaseResponse<string>.OkDataResponse(result,"tạo data thành công"));
         }
 
         [HttpPost("query")]
@@ -27,7 +30,7 @@ namespace ChatFPT.API.Controllers
         {
             var result = await _uploadDataService.QueryDataAsync(question);
             string id = "";
-            return Ok(result);
+            return Ok(BaseResponse<string>.OkDataResponse(result, "truy vấn data thành công"));
         }
     }
 }

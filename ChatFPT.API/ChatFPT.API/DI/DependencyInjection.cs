@@ -33,7 +33,7 @@ namespace ChatFPT.API.DI
             services.AddUnitOfWork();
             services.JwtSettingsConfig(configuration);
             services.AddAuthenJwt();
-            services.AddFirebaseAuth(configuration);
+            services.AddFirebaseServices(configuration);
             //services.ConfigRedis(configuration);
             services.AddSignalR();
             services.AddRedis(configuration);
@@ -111,7 +111,7 @@ namespace ChatFPT.API.DI
                 options.LowercaseUrls = true;
             });
         }
-        
+
         public static void ConfigSwagger(this IServiceCollection services)
         {
             // config swagger
@@ -203,28 +203,58 @@ namespace ChatFPT.API.DI
             });
         }
 
-        public static void AddFirebaseAuth(this IServiceCollection services, IConfiguration configuration)
+        public static void AddFirebaseServices(this IServiceCollection services, IConfiguration configuration)
         {
-            var firebaseConfig = configuration.GetSection("FireBase").Get<Dictionary<string, string>>();
-            
-
-            if (firebaseConfig != null)
+            // Firebase Auth Configuration
+            var firebaseAuthConfig = configuration.GetSection("Firebase").Get<Dictionary<string, object>>();
+            if (firebaseAuthConfig != null)
             {
-                var credential = GoogleCredential.FromJson(JsonConvert.SerializeObject(firebaseConfig));
+                var authCredential = GoogleCredential.FromJson(JsonConvert.SerializeObject(firebaseAuthConfig));
 
-               var firebaseApp =  FirebaseApp.Create(new AppOptions
+                FirebaseApp authApp;
+                if (FirebaseApp.GetInstance("AuthApp") == null)
                 {
-                    Credential = credential
-                });
-                services.AddSingleton(credential);
-                services.AddSingleton(firebaseApp);
+                    authApp = FirebaseApp.Create(new AppOptions
+                    {
+                        Credential = authCredential
+                    }, "AuthApp");
+                }
+                else
+                {
+                    authApp = FirebaseApp.GetInstance("AuthApp");
+                }
 
+                services.AddSingleton(authCredential);
+                services.AddSingleton(authApp);
+                services.AddSingleton(provider => FirebaseAuth.GetAuth(authApp));
             }
-            
-            services.AddSingleton(provider => FirebaseAuth.GetAuth(provider.GetRequiredService<FirebaseApp>()));
-            services.AddSingleton(provider => FirebaseMessaging.GetMessaging(provider.GetRequiredService<FirebaseApp>()));
+
+            // Firebase Push Notification Configuration
+            var firebasePushConfig = configuration.GetSection("FirebasePushNotification").Get<Dictionary<string, object>>();
+            if (firebasePushConfig != null)
+            {
+                var pushCredential = GoogleCredential.FromJson(JsonConvert.SerializeObject(firebasePushConfig));
+
+                FirebaseApp pushApp;
+                if (FirebaseApp.GetInstance("PushApp") == null)
+                {
+                    pushApp = FirebaseApp.Create(new AppOptions
+                    {
+                        Credential = pushCredential
+                    }, "PushApp");
+                }
+                else
+                {
+                    pushApp = FirebaseApp.GetInstance("PushApp");
+                }
+
+                services.AddSingleton(pushCredential);
+                services.AddSingleton(pushApp);
+                services.AddSingleton(provider => FirebaseMessaging.GetMessaging(pushApp));
+            }
 
             services.AddSingleton<FirebaseAuthHelper>();
+
         }
     }
 }
