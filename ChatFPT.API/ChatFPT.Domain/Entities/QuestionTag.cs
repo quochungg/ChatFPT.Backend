@@ -1,7 +1,6 @@
 ﻿
 
 using ChatFPT.Domain.Base;
-using System.ComponentModel.DataAnnotations;
 
 namespace ChatFPT.Domain.Entities
 {

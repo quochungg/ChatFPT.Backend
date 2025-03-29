@@ -1,4 +1,5 @@
 ﻿using ChatFPT.Core.Constaints;
+using ChatFPT.Core.ExceptionCustom;
 using ChatFPT.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -6,7 +7,7 @@ using Pinecone;
 //using Pinecone.Grpc;
 using System.Text;
 using System.Text.Json;
-using static ChatFPT.Core.Base.BaseException;
+
 
 public class UploadDataService : IUploadDataService
 {
