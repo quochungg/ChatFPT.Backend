@@ -37,8 +37,7 @@ public class AIService : IAIService
         _httpClient = new HttpClient();
         _httpClient.DefaultRequestHeaders.Add("Api-Key", _pineconeApiKey);
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
-    }
+        _mapper = mapper;    }
 
     public async Task<List<float>> GetEmbeddingAsync(string text)
     {
