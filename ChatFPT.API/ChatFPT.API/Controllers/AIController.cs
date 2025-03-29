@@ -26,6 +26,7 @@ namespace ChatFPT.API.Controllers
         public async Task<IActionResult> QueryData(string question)
         {
             var result = await _uploadDataService.QueryDataAsync(question);
+            string id = "";
             return Ok(result);
         }
     }

@@ -181,7 +181,7 @@ public class AIService : IAIService
         var queryResponse = await index.QueryAsync(new QueryRequest
         {
             Vector = embedding.ToArray(),
-            TopK = 3,
+            TopK = 1,
             IncludeMetadata = true
         }
         ) ?? throw new Exception("");
