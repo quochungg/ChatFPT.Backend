@@ -33,7 +33,7 @@ public class AIService : IAIService
         _indexName = configuration["PineCone:PineconeIndexName"]
             ?? throw new ErrorException(StatusCodes.Status500InternalServerError, ResponseCodeConstaints.INTERNAL_SERVER_ERROR, "Không tìm thấy Pinecone Index");
         _model = configuration["OpenAI:OpenAIModel"]
-            ?? throw new Exception("Model not found in environment variables!");
+            ?? throw new ErrorException(StatusCodes.Status500InternalServerError,ResponseCodeConstaints.INTERNAL_SERVER_ERROR,"Model not found in environment variables!");
         _httpClient = new HttpClient();
         _httpClient.DefaultRequestHeaders.Add("Api-Key", _pineconeApiKey);
         _unitOfWork = unitOfWork;
@@ -193,10 +193,10 @@ public class AIService : IAIService
             TopK = 1,
             IncludeMetadata = true
         }
-        ) ?? throw new Exception("");
+        ) ?? throw new ErrorException(StatusCodes.Status400BadRequest,ResponseCodeConstaints.BADREQUEST,"query không thành công");
 
         if (queryResponse.Matches!.Count() == 0)
-            return null;
+            throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "Không tìm thấy data");
 
         //Xử lý tag
         var tagsMetaData = queryResponse.Matches!.Select(m => m.Metadata!["tags"]).FirstOrDefault() ?? throw new ErrorException(StatusCodes.Status400BadRequest,ResponseCodeConstaints.BADREQUEST,"Error Tag");
