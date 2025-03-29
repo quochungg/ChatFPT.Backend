@@ -1,7 +1,9 @@
-﻿using ChatFPT.Application.Interface;
+﻿using AutoMapper;
+using ChatFPT.Application.Interface;
 using ChatFPT.Core.Constaints;
 using ChatFPT.Core.ExceptionCustom;
 using ChatFPT.Core.Models.AI;
+using ChatFPT.Core.Models.Answer;
 using ChatFPT.Core.Models.Question;
 using ChatFPT.Domain.Entities;
 using ChatFPT.Service.Interfaces;
@@ -19,9 +21,10 @@ public class AIService : IAIService
     private readonly string _indexName;
     private readonly string _model;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
     private readonly HttpClient _httpClient;
 
-    public AIService(IConfiguration configuration, IUnitOfWork unitOfWork)
+    public AIService(IConfiguration configuration, IUnitOfWork unitOfWork, IMapper mapper)
     {
         _pineconeApiKey = configuration["PineCone:PineconeApiKey"]
             ?? throw new ErrorException(StatusCodes.Status500InternalServerError, ResponseCodeConstaints.INTERNAL_SERVER_ERROR, "Không tìm thấy Pinecone API Key");
@@ -34,6 +37,7 @@ public class AIService : IAIService
         _httpClient = new HttpClient();
         _httpClient.DefaultRequestHeaders.Add("Api-Key", _pineconeApiKey);
         _unitOfWork = unitOfWork;
+        _mapper = mapper;
     }
 
     public async Task<List<float>> GetEmbeddingAsync(string text)
@@ -67,7 +71,7 @@ public class AIService : IAIService
         return vector;
     }
 
-    public async Task<string> QueryDataAsync(string question)
+    public async Task<ResponseAnswerModel> QueryDataAsync(string question)
     {
         using var httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_openaiApiKey}");
@@ -117,7 +121,9 @@ public class AIService : IAIService
 
         await _unitOfWork.SaveAsync();
 
-        return jsonResponse.choices[0].message.content.ToString();
+        var result = _mapper.Map<ResponseAnswerModel>(_unitOfWork.GetRepository<Answer>().Entities.FirstOrDefault(a => a.QuestionId == questionDb.Id));
+
+        return result;
     }
 
     public async Task<bool> UploadDataToPineconeAsync(List<UploadDataModel> model)

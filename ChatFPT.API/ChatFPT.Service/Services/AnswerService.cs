@@ -59,7 +59,7 @@ namespace ChatFPT.Service.Services
                                                     where !a.DeleteTime.HasValue
                                                     select new ResponseAnswerModel()
                                                     {
-                                                        Id = a.Id,
+                                                        AnswerId = a.Id,
                                                         Content = a.Content,
                                                         QuestionId = a.QuestionId,
 
