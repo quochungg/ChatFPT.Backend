@@ -89,7 +89,7 @@ public class AIService : IAIService
                     "- Quy trình học tập, quy định học vụ, học phí.\n" +
                     "- Hỗ trợ về tài khoản sinh viên, email, hệ thống LMS.\n" +
                     "- Câu lạc bộ, sự kiện, cơ hội học bổng, trao đổi sinh viên.\n\n" +
-                    "Nếu sinh viên có nhu cầu thực hiện các thủ tục, dịch vụ vui lòng liên hệ Trung tâm Dịch vụ Sinh viên tại Phòng 202, điện thoại : 028.73005585 , email: sschcm@fe.edu.vn\n" +
+                    "Nếu sinh viên có nhu cầu thực hiện các thủ tục, dịch vụ vui lòng liên hệ Trung tâm Dịch vụ Sinh viên tại Phòng 202, điện thoại : 028.73005585 , email: sschcm@fe.edu.vn\n"
                     },
                 new { role = "user", content = question }
             }
@@ -100,15 +100,15 @@ public class AIService : IAIService
         var response = await httpClient.PostAsync("https://api.openai.com/v1/chat/completions", content);
 
         if (!response.IsSuccessStatusCode)
-        {         
-            return null;
+        {
+            throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "Không thành công");
         }
 
         var jsonResponse = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(await response.Content.ReadAsStringAsync());
         
         var answer = jsonResponse!.choices[0].message.content.ToString();
 
-        var questionDb = await _unitOfWork.GetRepository<Question>().Entities.FirstOrDefaultAsync(q => q.Content! == question) ?? throw new Exception("Không tìm thấy câu hỏi");
+        var questionDb = await _unitOfWork.GetRepository<Question>().Entities.FirstOrDefaultAsync(q => q.Content! == question) ?? throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST ,"Không tìm thấy câu hỏi");
 
         await _unitOfWork.GetRepository<Answer>().AddAsync(new Answer
         {
@@ -178,11 +178,14 @@ public class AIService : IAIService
 
         if (index == null)
         {
-            return null;
+            throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "queryInecone Không thành công");
         }
 
         var embedding = await GetEmbeddingAsync(query);
-        if (embedding == null) return null;
+        if (embedding == null)
+        {
+            throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "embedding không thành công");
+        }
 
         var queryResponse = await index.QueryAsync(new QueryRequest
         {
@@ -196,7 +199,7 @@ public class AIService : IAIService
             return null;
 
         //Xử lý tag
-        var tagsMetaData = queryResponse.Matches!.Select(m => m.Metadata!["tags"]).FirstOrDefault() ?? throw new Exception("Error Tag");
+        var tagsMetaData = queryResponse.Matches!.Select(m => m.Metadata!["tags"]).FirstOrDefault() ?? throw new ErrorException(StatusCodes.Status400BadRequest,ResponseCodeConstaints.BADREQUEST,"Error Tag");
 
         var tags = tagsMetaData.Value.ToString();
 
@@ -211,7 +214,7 @@ public class AIService : IAIService
 
         await _unitOfWork.SaveAsync();
 
-        question = await _unitOfWork.GetRepository<Question>().Entities.FirstOrDefaultAsync(q => q.Content == query) ?? throw new Exception("");
+        question = await _unitOfWork.GetRepository<Question>().Entities.FirstOrDefaultAsync(q => q.Content == query) ?? throw new ErrorException(StatusCodes.Status400BadRequest,ResponseCodeConstaints.BADREQUEST,"Error Question");
 
         foreach (var tag in tags!.Split(","))
         {
