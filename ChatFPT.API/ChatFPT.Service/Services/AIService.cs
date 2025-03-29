@@ -89,8 +89,8 @@ public class AIService : IAIService
                     "- Quy trình học tập, quy định học vụ, học phí.\n" +
                     "- Hỗ trợ về tài khoản sinh viên, email, hệ thống LMS.\n" +
                     "- Câu lạc bộ, sự kiện, cơ hội học bổng, trao đổi sinh viên.\n\n" +
-                    "Nếu không chắc chắn về câu trả lời, hãy hướng dẫn sinh viên liên hệ phòng cộng tác sinh viên 202 thông qua số điện thoại 028773005585 hoặc email ctsv.hcm@fpt.edu.vn.\n" +
-                    "" },
+                    "Nếu sinh viên có nhu cầu thực hiện các thủ tục, dịch vụ vui lòng liên hệ Trung tâm Dịch vụ Sinh viên tại Phòng 202, điện thoại : 028.73005585 , email: sschcm@fe.edu.vn\n" +
+                    },
                 new { role = "user", content = question }
             }
         };
