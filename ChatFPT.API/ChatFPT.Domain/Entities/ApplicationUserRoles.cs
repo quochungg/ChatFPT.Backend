@@ -9,10 +9,6 @@ namespace ChatFPT.Domain.Entities
         public DateTimeOffset LastUpdatedTime { get; set; }
 
         public DateTimeOffset? DeletedTime { get; set; }
-        public ApplicationUserRoles()
-        {
-            CreatedTime = DateTimeOffset.UtcNow;
-            LastUpdatedTime = CreatedTime;
-        }
+
     }
 }

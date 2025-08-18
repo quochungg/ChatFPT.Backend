@@ -1,6 +1,4 @@
-﻿
-
-using ChatFPT.Application.Interface;
+﻿using ChatFPT.Application.Interface;
 using ChatFPT.Core.Constaints;
 using ChatFPT.Core.ExceptionCustom;
 using ChatFPT.Core.Models.User;

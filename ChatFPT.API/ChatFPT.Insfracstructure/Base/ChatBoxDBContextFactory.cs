@@ -1,5 +1,4 @@
-﻿using ChatFPT.Insfracstructure.Base;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 
@@ -17,7 +16,7 @@ namespace ChatFPT.Insfracstructure.Base
                 .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true) 
                 .Build();
 
-            string connectionString = configuration.GetConnectionString("DefaultSQLConnection");
+            string? connectionString = configuration.GetConnectionString("DefaultSQLConnection");
 
             var builder = new DbContextOptionsBuilder<ChatBoxDBContext>();
             builder.UseSqlServer(connectionString);

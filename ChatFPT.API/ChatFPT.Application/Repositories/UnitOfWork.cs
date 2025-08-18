@@ -4,9 +4,7 @@ namespace ChatFPT.Application.Repositories
 {
     using global::ChatFPT.Application.Interface;
     using global::ChatFPT.Insfracstructure.Base;
-    using Microsoft.EntityFrameworkCore;
     using System;
-    using System.Collections.Generic;
     using System.Threading.Tasks;
 
     namespace ChatFPT.Infrastructure.Repositories

@@ -4,7 +4,6 @@ using ChatFPT.Core.Constaints;
 using ChatFPT.Core.ExceptionCustom;
 using ChatFPT.Core.Models.AI;
 using ChatFPT.Core.Models.Answer;
-using ChatFPT.Core.Models.Question;
 using ChatFPT.Domain.Entities;
 using ChatFPT.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -89,7 +88,7 @@ public class AIService : IAIService
                     "- Quy trình học tập, quy định học vụ, học phí.\n" +
                     "- Hỗ trợ về tài khoản sinh viên, email, hệ thống LMS.\n" +
                     "- Câu lạc bộ, sự kiện, cơ hội học bổng, trao đổi sinh viên.\n\n" +
-                    "Nếu sinh viên có nhu cầu thực hiện các thủ tục, dịch vụ vui lòng liên hệ Trung tâm Dịch vụ Sinh viên tại Phòng 202, điện thoại : 028.73005585 , email: sschcm@fe.edu.vn\n"
+                    "Nếu sinh viên có nhu cầu thực hiện các thủ tục, dịch vụ gợi ý liên hệ Trung tâm Dịch vụ Sinh viên tại Phòng 202, điện thoại : 028.73005585 , email: sschcm@fe.edu.vn\n"
                     },
                 new { role = "user", content = question }
             }
@@ -120,8 +119,11 @@ public class AIService : IAIService
         });
 
         await _unitOfWork.SaveAsync();
+        
+        var answerDb = await _unitOfWork.GetRepository<Answer>().Entities.FirstOrDefaultAsync(a => a.QuestionId == questionDb.Id) ?? throw new ErrorException(StatusCodes.Status400BadRequest, ResponseCodeConstaints.BADREQUEST, "Không tìm thấy câu trả lời");
 
-        var result = _mapper.Map<ResponseAnswerModel>(_unitOfWork.GetRepository<Answer>().Entities.FirstOrDefault(a => a.QuestionId == questionDb.Id));
+        var result = _mapper.Map<ResponseAnswerModel>(answerDb);
+        result.AnswerId = answerDb.Id;
 
         return result;
     }

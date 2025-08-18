@@ -35,7 +35,7 @@ namespace ChatFPT.API.DI
             services.AddAuthenJwt();
             services.AddFirebaseServices(configuration);
             //services.ConfigRedis(configuration);
-            services.AddSignalR();
+            //services.AddSignalR();
             services.AddRedis(configuration);
 
         }

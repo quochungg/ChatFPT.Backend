@@ -32,7 +32,8 @@ namespace ChatFPT.Service.Services
         public async Task CreateFeedbackAsync(CreateFeedbackModel model)
         {
             Feedback feedback = _mapper.Map<Feedback>(model);
-            feedback.CreatedBy = Authentication.GetUserIdFromHttpContextAccessor(_contextAccessor);
+            //feedback.CreatedBy = Authentication.GetUserIdFromHttpContextAccessor(_contextAccessor);
+            feedback.CreatedBy = "Anonymous";
             feedback.CreatedTime = DateTime.Now;
             await _unitOfWork.GetRepository<Feedback>().AddAsync(feedback);
 

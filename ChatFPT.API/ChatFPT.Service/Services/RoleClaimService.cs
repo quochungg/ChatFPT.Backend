@@ -8,8 +8,6 @@ using ChatFPT.Domain.Entities;
 using ChatFPT.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using System.Drawing.Printing;
-using System.Security.Claims;
 
 namespace ChatFPT.Service.Services
 {
@@ -17,13 +15,11 @@ namespace ChatFPT.Service.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public RoleClaimService(IHttpContextAccessor httpContextAccessor, IMapper mapper, IUnitOfWork unitOfWork)
+        public RoleClaimService(IMapper mapper, IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
-            _httpContextAccessor = httpContextAccessor;
         }
         public async Task CreateRoleClaim(CreateRoleClaim model)
         {
